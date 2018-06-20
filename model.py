@@ -24,7 +24,7 @@ class RNNDecoder(nn.Module):
 		self.softmax = nn.LogSoftmax(dim=1)
 
 	def forward(self, input, hidden):
-		output = self.embedding(input).view(1,1,-1)
+		output = self.embedding(input).view(1,1,-1) # Reshape
 		output = F.relu(output)
 		output, hidden = self.gru(output,hidden)
 		output = self.softmax(Self.out(output[0]))
