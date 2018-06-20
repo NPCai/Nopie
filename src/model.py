@@ -8,17 +8,20 @@ from torch.autograd import Variable
 from torch import optim
 import torch.nn.functional as F
 
+VOCAB_SIZE = 1e6
+
+
 class RNNEncoder(nn.Module):
 
 	def __init__(self):
 		super().__init__()
-		self.input_size = 300
+		self.vocab_size = 300
 		self.hidden_size = 500
+		self.embedding = nn.Embedding(input_size, hidden_size)
 		self.gru = nn.GRU(hidden_size, hidden_size, 1) # 1 hidden layer
 
 	def forward(self, input, hidden): # Meant to be called in a for loop over the input sequence
-		
-
+		pass
 
 class RNNDecoder(nn.Module):
 	def __init__(self, hidden_size, output_size):
