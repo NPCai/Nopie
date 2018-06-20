@@ -18,6 +18,7 @@ class RNNEncoder(nn.Module):
 		self.gru = nn.GRU(hidden_size, hidden_size, 1) # 1 hidden layer
 
 	def forward(self, input, hidden): # Meant to be called in a for loop over the input sequence
+		# TODO(jacob)
 		pass
 
 class RNNDecoder(nn.Module):
