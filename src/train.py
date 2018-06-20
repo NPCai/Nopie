@@ -7,4 +7,7 @@ import torch.nn.functional as F
 def train(input, target, encoder, decoder, encoder_optimizer, decoder_optimizer, criterion):
 	encoder_hidden = encoder.initHidden()
 
-print("PooPoo")
+	encoder_optimizer.zero_grad()
+	decoder_optimizer.zero_grad()
+
+	encoder_outputs = torch.zeros(encoder.hidden_size, device = device)
