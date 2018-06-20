@@ -9,7 +9,7 @@ from torch import optim
 import torch.nn.functional as F
 
 class RNNEncoder(nn.Module):
-	
+
 	def __init__(self):
 
 
