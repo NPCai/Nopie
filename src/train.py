@@ -27,15 +27,15 @@ class RNN(object):
 
 
 def train(self, input, target):
-	self.encoder_optimizer.zero_grad()
+	self.encoder_optimizer.zero_grad() # Zeros the gradient before every iteration
 	self.decoder_optimizer.zero_grad()
 
 	# Encoder stuff
-	_, encoder_hidden = self.encoder.forward(1, encoder_hidden)
+	_, encoder_hidden = self.encoder.forward(1, encoder_hidden) # Forward propogation of the encoder to the decoder
 
 	# Decoder stuff
-	target.insert(0, self.sos)
-	target.append(self.eos)
+	target.insert(0, self.sos) # Insert the start of sentence token into the first position
+	target.append(self.eos) # Append the end of sentence token into the end
 	loss = 0
 	for i in range(len(target) - 1):
 		_, softmax, encoder_hidden = self.decoder.forward(target[i], encoder_hidden)
