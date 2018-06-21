@@ -5,32 +5,66 @@ from torch import optim
 import torch.nn.functional as F
 
 teacher_forcing_ratio = 0.5
+SOS_token = 0
+EOS_token = 1
 
-def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, criterion):
-	encoder_hidden = encoder.initHidden()
+class RNN(object):
+	def __init__(self, input_size, output_size):
+		super(RNN, self).__init__()
 
-	encoder_optimizer.zero_grad()
-	decoder_optimizer.zero_grad()
+		self.encoder = RNNEncoder(input_size)
+		self.decoder = RNNDecoder(output_size)
 
-	input_length = input_tensor.size(0)
-	target_length = target_tensor.size(0)
+		self.loss = nn.CrossEntropyLoss()
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters())
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
 
-	encoder_outputs = torch.zeros(encoder.hidden_size, device = device)
+		sos, eos = torch.LongTensor(1, 1).zero_(), torch.LongTensor(1, 1).zero_()
+		sos[0,0], eos[0,0] = 0, 1
 
+		self.sos, self.eos = sos, eos
+
+
+def train(self, input, target):
+	encoder_hidden = self.encoder.initHidden()	
+	self.encoder_optimizer.zero_grad()
+	self.decoder_optimizer.zero_grad()
+
+	# Encoder stuff
+	for i in input:
+		_, encoder_hidden = self.encoder.forward(i, encoder_hidden)
+
+	# Decoder stuff
+	target.insert(0, self.sos)
+	target.append(self.eos)
 	loss = 0
+	for i in range(len(target) - 1):
+		_, softmax, encoder_hidden = self.decoder.forward(target[i], encoder_hidden)
+		loss += self.loss(softmax, target[i+1][0])
 
-	for i in range(input_length):
-		encoder_output, encoder_hidden = encoder(input_tensor[i], encoder_hidden)
-		encoder_outputs[i] = encoder_output[0, 0]
+	loss.backward()
 
-	decoder_input = torch.tensor([[SOS_token]], device = device)
+	self.encoder_optimizer.step()
+	self.decoder_optimizer.step()
+	return loss.data[0]
 
-	decoder_hidden = encoder_hidden
+def evaluation(self, input):
+	encoder_hidden = self.encoder.initHidden()
 
-	use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
+	# Encoder stuff
+	for i in input:
+		_, encoder_hidden = self.encoder.forward(i, encoder_hidden)
 
+	sentence = []
+	input = self.sos
+
+<<<<<<< HEAD
 	if use_teacher_forcing:
 		# Teacher forcing: feed the target as the next input
 		for i in range(target_length):
 			
 			
+=======
+	# Decoder stuff
+	while 
+>>>>>>> 1fdbff2138caffbf4b059a090de86de280f0eddb
