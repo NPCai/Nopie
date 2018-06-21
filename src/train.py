@@ -33,3 +33,4 @@ def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, deco
 		# Teacher forcing: feed the target as the next input
 		for i in range(target_length):
 			
+			
