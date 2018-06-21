@@ -26,7 +26,6 @@ class RNN(object):
 
 
 def train(self, input, target):
-	encoder_hidden = self.encoder.initHidden()	
 	self.encoder_optimizer.zero_grad()
 	self.decoder_optimizer.zero_grad()
 
@@ -49,8 +48,6 @@ def train(self, input, target):
 	return loss.data[0]
 
 def evaluation(self, input):
-	encoder_hidden = self.encoder.initHidden()
-
 	# Encoder stuff
 	for i in input:
 		_, encoder_hidden = self.encoder.forward(i, encoder_hidden)
