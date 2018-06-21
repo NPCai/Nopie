@@ -4,23 +4,24 @@ import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
 
-teacher_forcing_ratio = 0.5
-SOS_token = 0
-EOS_token = 1
+SOS_token = 0 # Start of sentence
+EOS_token = 1 # End of sentence
 
 class RNN(object):
 	def __init__(self, input_size, output_size):
 		super(RNN, self).__init__()
 
-		self.encoder = RNNEncoder(input_size)
-		self.decoder = RNNDecoder(output_size)
+		self.encoder = RNNEncoder(input_size) # Defining the encoder
+		self.decoder = RNNDecoder(output_size) # Defining the decoder
 
-		self.loss = nn.CrossEntropyLoss()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters())
+		self.loss = nn.CrossEntropyLoss() # Loss function also known as log loss
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) # Adam optimizer is a stochastic gradient descent which maintains a single learning rate
+																	   # for all weight updates and does not change during training. A learning rate is maintained
+																	   # for each network weight and separately adapted as learning progresses
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
 
 		sos, eos = torch.LongTensor(1, 1).zero_(), torch.LongTensor(1, 1).zero_()
-		sos[0,0], eos[0,0] = 0, 1
+		sos[0,0], eos[0,0] = 0, 1 # Defines the SOS and EOS as 1x1 tensors with values 0 and 1 respectively
 
 		self.sos, self.eos = sos, eos
 
