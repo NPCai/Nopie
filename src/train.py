@@ -58,7 +58,6 @@ def evaluation(self, input):
 	sentence = []
 	input = self.sos
 
-	# Decoder stuff
 
 
 def save(self):

@@ -1,54 +1,25 @@
-import string
-import random
-
-import torch
-import torch
 import torch.nn as nn
-from torch.autograd import Variable
-from torch import optim
-import torch.nn.functional as F
 
-VOCAB_SIZE = 1e6
-
-class RNNEncoder(nn.Module):
-	def __init__(self):
+class Encoder(nn.Module):
+	def __init__(self, embedding_size=500, hidden_size=1000, vocab_size):
 		super().__init__()
-		self.n_layers = 1
-		self.hidden_size = 500
-		self.embedding = nn.Embedding(VOCAB_SIZE, hidden_size)
-		self.gru = nn.GRU(hidden_size, hidden_size, n_layers) # 1 hidden layer
-
-	def forward(self, input_var, hidden): 
-		embed = self.embedding(input_var)
-		seq_len = len(word_inputs)
-		embedded = self.embedding(word_inputs).view(seq_len, 1, -1)
-		output, hidden = self.gru(embedded, hidden)
-		return output, hidden
-
-	def initHidden(self):
-		hidden = torch.zeroes(self.n_layers, 1, self.hidden_size)
-		if USE_CUDA: hidden = hidden.cuda()
-		return hidden
-		
-
-class RNNDecoder(nn.Module):
-	def __init__(self, hidden_size, output_size):
-		super(RNNDecoder, self).__init__()
-		self.hidden_size = hidden_size
-
-		self.embedding = nn.Embedding
+		self.embedding = nn.Embedding(vocab_size, hidden_size)
 		self.gru = nn.GRU(hidden_size, hidden_size)
-		self.out = nn.Linear(initHidden_size, output_size)
+
+	def forward(self, sentence):
+		embed = self.embedding(sentence) 
+		embedded = self.embedding(sentence).view(len(sentence), 1, -1) # (seq_len, batch len, input_size)
+		return self.gru(embedded)[1]	
+
+class Decoder(nn.Module):
+	def __init__(self, embedding_size = 500, hidden_size=1000, output_size = 300, vocab_size):
+		super().__init__()
+		self.embedding = nn.Embedding(vocab_size, hidden_size)
+		self.gru = nn.GRU(hidden_size, hidden_size)
+		self.linear = nn.Linear(hidden_size, output_size)
 		self.softmax = nn.LogSoftmax(dim=1)
 
-	def forward(self, input, hidden):
-		output = self.embedding(input).view(1,1,-1) # Reshape
-		output = F.relu(output)
-		output, hidden = self.gru(output,hidden)
-		output = self.softmax(self.out(output[0]))
-		return output, hidden
-
-	def initHidden(self):
-		hidden = torch.zeroes(self.n_layers, 1, self.hidden_size)
-		if USE_CUDA: hidden = hidden.cuda()
-		return hidden
+	def forward(self, word, hidden): # Takes one input at once
+		embedded = self.embedding(word).view(1, 1, -1)
+		output, hidden_state = self.gru(embedded, hidden)
+		return output, hidden_state
