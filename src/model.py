@@ -8,7 +8,6 @@ class Encoder(nn.Module):
 		self.gru = nn.GRU(hidden_size, hidden_size)
 
 	def forward(self, sentence): # Takes all input at once
-		embed = self.embedding(sentence) 
 		embedded = self.embedding(sentence).view(len(sentence), 1, -1) # (seq_len, batch len, input_size)
 		return self.gru(embedded)[1] # [1] is the hidden state, can throw away output i.e. [0]
 
@@ -18,10 +17,9 @@ class Decoder(nn.Module):
 		self.embedding = nn.Embedding(vocab_size, hidden_size)
 		self.gru = nn.GRU(hidden_size, hidden_size)
 		self.linear = nn.Linear(hidden_size, output_size)
-		self.softmax = nn.Softmax()
 
 	def forward(self, word, hidden): # Takes one input at a time
 		embedded = self.embedding(word).view(1, 1, -1)
-		_, hidden_state = self.gru(embedded, hidden)
+		hidden_state = self.gru(embedded, hidden)[1]
 		probs = F.softmax(self.linear(hidden)) # i.e. the probs at the t'th step for beam search
 		return probs, hidden_state
