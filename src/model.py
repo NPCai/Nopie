@@ -38,7 +38,7 @@ class RNNDecoder(nn.Module):
 
 		self.embedding = nn.Embedding
 		self.gru = nn.GRU(hidden_size, hidden_size)
-		self.out = nn.Linear(hidden_size, output_size)
+		self.out = nn.Linear(initHidden_size, output_size)
 		self.softmax = nn.LogSoftmax(dim=1)
 
 	def forward(self, input, hidden):
