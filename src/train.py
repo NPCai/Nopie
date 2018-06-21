@@ -58,13 +58,5 @@ def evaluation(self, input):
 	sentence = []
 	input = self.sos
 
-<<<<<<< HEAD
-	if use_teacher_forcing:
-		# Teacher forcing: feed the target as the next input
-		for i in range(target_length):
-			
-			
-=======
 	# Decoder stuff
 	while 
->>>>>>> 1fdbff2138caffbf4b059a090de86de280f0eddb
