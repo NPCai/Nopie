@@ -33,10 +33,14 @@ def train(self, input, target):
 
 	target.insert(0, self.sos)
 	target.append(self.eos)
-
+	loss = 0
+	for i in range(len(target) - 1):
+		_, softmax, hidden_state = self.decoder.forward(target[i], hidden_state)
+		loss += self.loss(softmax, target[i+1][0])
 
 	loss.backward()
 
 	self.encoder_optimizer.step()
 	self.decoder_optimizer.step()
+	return loss.data[0]
 def evaluation
