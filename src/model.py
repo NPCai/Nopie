@@ -22,4 +22,4 @@ class Decoder(nn.Module):
 		embedded = self.embedding(word).view(1, 1, -1)
 		hidden_state = self.gru(embedded, hidden)[1]
 		probs = F.softmax(self.linear(hidden)) # i.e. the probs at the t'th step for beam search
-		return probs, hidden_stateg
+		return probs, hidden_state
