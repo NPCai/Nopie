@@ -5,6 +5,8 @@ from torch import optim
 import torch.nn.functional as F
 
 teacher_forcing_ratio = 0.5
+SOS_token = 0
+EOS_token = 1
 
 def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, criterion):
 	encoder_hidden = encoder.initHidden()
@@ -32,4 +34,3 @@ def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, deco
 	if use_teacher_forcing:
 		# Teacher forcing: feed the target as the next input
 		for i in range(target_length):
-			
