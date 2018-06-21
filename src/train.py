@@ -30,8 +30,7 @@ def train(self, input, target):
 	self.decoder_optimizer.zero_grad()
 
 	# Encoder stuff
-	for i in input:
-		_, encoder_hidden = self.encoder.forward(i, encoder_hidden)
+	_, encoder_hidden = self.encoder.forward(1, encoder_hidden)
 
 	# Decoder stuff
 	target.insert(0, self.sos)
@@ -49,8 +48,7 @@ def train(self, input, target):
 
 def evaluation(self, input):
 	# Encoder stuff
-	for i in input:
-		_, encoder_hidden = self.encoder.forward(i, encoder_hidden)
+	_, encoder_hidden = self.encoder.forward(1, encoder_hidden)
 
 	sentence = []
 	input = self.sos
