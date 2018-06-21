@@ -25,39 +25,18 @@ class RNN(object):
 		self.sos, self.eos = sos, eos
 
 
-def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, lossFunction):
-	encoder_hidden = encoder.initHidden()
+def train(self, input, target):
+	encoder_hidden = self.encoder.initHidden()	
+	self.encoder_optimizer.zero_grad()
+	self.decoder_optimizer.zero_grad()
 
-	encoder_optimizer.zero_grad()
-	decoder_optimizer.zero_grad()
 
-	input_length = input_tensor.size(0)
-	target_length = target_tensor.size(0)
-
-	encoder_outputs = torch.zeros(encoder.hidden_size)
-
-	loss = 0
-
-	for i in range(input_length):
-		encoder_output, encoder_hidden = encoder(input_tensor[i], encoder_hidden)
-		encoder_outputs[i] = encoder_output[0, 0]
-
-	decoder_input = torch.tensor([[SOS_token]])
-	decoder_hidden = encoder_hidden
-
-	use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
-
-	if use_teacher_forcing:
-		# Teacher forcing: feed the target as the next input
-		for i in range(target_length):
-			decoder_output, decoder_hidden, decoder_attention = decoder(decoder_input, decoder_hidden, encoder_outputs)
-			loss += lossFunction(decoder_output, target_tensor[i])
-	else:
-
+	target.insert(0, self.sos)
+	target.append(self.eos)
 
 
 	loss.backward()
 
-	encoder_optimizer.step()
-	decoder_optimizer.step()
+	self.encoder_optimizer.step()
+	self.decoder_optimizer.step()
 def evaluation
