@@ -15,6 +15,15 @@ class RNN(object):
 		self.encoder = RNNEncoder(input_size)
 		self.decoder = RNNDecoder(output_size)
 
+		self.loss = nn.CrossEntropyLoss()
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters())
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
+
+		sos, eos = torch.LongTensor(1, 1).zero_(), torch.LongTensor(1, 1).zero_()
+		sos[0,0], eos[0,0] = 0, 1
+
+		self.sos, self.eos = sos, eos
+
 
 def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, lossFunction):
 	encoder_hidden = encoder.initHidden()
