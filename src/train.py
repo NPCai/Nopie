@@ -54,7 +54,6 @@ def evaluation(self, input):
 	input = self.sos
 
 
-
 def save(self):
 	torch.save(self.encoder.state_dict(), "encoder.ckpt")
 	torch.save(self.decoder.state_dict(), "decoder.ckpt")

@@ -17,9 +17,10 @@ class Decoder(nn.Module):
 		self.embedding = nn.Embedding(vocab_size, hidden_size)
 		self.gru = nn.GRU(hidden_size, hidden_size)
 		self.linear = nn.Linear(hidden_size, output_size)
-		self.softmax = nn.LogSoftmax(dim=1)
+		self.softmax = nn.Softmax()
 
 	def forward(self, word, hidden): # Takes one input at once
 		embedded = self.embedding(word).view(1, 1, -1)
 		output, hidden_state = self.gru(embedded, hidden)
-		return output, hidden_state
+		linear = self.linear(output)
+		return softmax, hidden_state
