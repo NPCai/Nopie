@@ -30,12 +30,16 @@ def train(self, input, target):
 	self.encoder_optimizer.zero_grad()
 	self.decoder_optimizer.zero_grad()
 
+	# Encoder stuff
+	for i in input:
+		_, encoder_hidden = self.encoder.forward(i, encoder_hidden)
 
+	# Decoder stuff
 	target.insert(0, self.sos)
 	target.append(self.eos)
 	loss = 0
 	for i in range(len(target) - 1):
-		_, softmax, hidden_state = self.decoder.forward(target[i], hidden_state)
+		_, softmax, encoder_hidden = self.decoder.forward(target[i], encoder_hidden)
 		loss += self.loss(softmax, target[i+1][0])
 
 	loss.backward()
@@ -43,4 +47,16 @@ def train(self, input, target):
 	self.encoder_optimizer.step()
 	self.decoder_optimizer.step()
 	return loss.data[0]
-def evaluation
+
+def evaluation(self, input):
+	encoder_hidden = self.encoder.initHidden()
+
+	# Encoder stuff
+	for i in input:
+		_, encoder_hidden = self.encoder.forward(i, encoder_hidden)
+
+	sentence = []
+	input = self.sos
+
+	# Decoder stuff
+	while 
