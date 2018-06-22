@@ -4,6 +4,7 @@ from torch import optim
 import torch.nn.functional as F
 from model import Encoder, Decoder
 from train import RNN
+from utils import vec, sentence_vec
 
 
 

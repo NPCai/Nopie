@@ -3,7 +3,7 @@ import csv
 import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-words = pd.read_table("../data/glove50d.txt", sep=" ", index_col=0, header=None, quoting=csv.QUOTE_NONE)
+words = pd.read_table("../data/glove_100d.txt", sep=" ", index_col=0, header=None, quoting=csv.QUOTE_NONE)
 
 def vec(word):
 	v = None
