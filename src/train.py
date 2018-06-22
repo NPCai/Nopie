@@ -26,35 +26,35 @@ class RNN(object):
 		self.sos, self.eos = sos, eos
 
 
-def train(self, input, target):
-	self.encoder_optimizer.zero_grad()
-	self.decoder_optimizer.zero_grad()
+	def train(self, input, target):
+		self.encoder_optimizer.zero_grad()
+		self.decoder_optimizer.zero_grad()
 
-	# Encoder stuff
-	_, encoder_hidden = self.encoder.forward(1, encoder_hidden)
+		# Encoder stuff
+		_, encoder_hidden = self.encoder.forward(1, encoder_hidden)
 
-	# Decoder stuff
-	target.insert(0, self.sos)
-	target.append(self.eos)
-	loss = 0
-	for i in range(len(target) - 1):
-		_, softmax, encoder_hidden = self.decoder.forward(target[i], encoder_hidden)
-		loss += self.loss(softmax, target[i+1][0])
+		# Decoder stuff
+		target.insert(0, self.sos)
+		target.append(self.eos)
+		loss = 0
+		for i in range(len(target) - 1):
+			_, softmax, encoder_hidden = self.decoder.forward(target[i], encoder_hidden)
+			loss += self.loss(softmax, target[i+1][0])
 
-	loss.backward()
+		loss.backward()
 
-	self.encoder_optimizer.step()
-	self.decoder_optimizer.step()
-	return loss.data[0]
+		self.encoder_optimizer.step()
+		self.decoder_optimizer.step()
+		return loss.data[0]
 
-def evaluation(self, input):
-	# Encoder stuff
-	_, encoder_hidden = self.encoder.forward(1, encoder_hidden)
+	def evaluation(self, input):
+		# Encoder stuff
+		_, encoder_hidden = self.encoder.forward(1, encoder_hidden)
 
-	sentence = []
-	input = self.sos
+		sentence = []
+		input = self.sos
 
 
-def save(self):
-	torch.save(self.encoder.state_dict(), "encoder.ckpt")
-	torch.save(self.decoder.state_dict(), "decoder.ckpt")
+	def save(self):
+		torch.save(self.encoder.state_dict(), "encoder.ckpt")
+		torch.save(self.decoder.state_dict(), "decoder.ckpt")
