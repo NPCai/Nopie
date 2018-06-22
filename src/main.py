@@ -22,13 +22,6 @@ def main():
 
 	data = "This is a sample sentence" # Pass the data through here later
 	rnn = RNN(data.input_size, data.output_size)
-<<<<<<< HEAD
-
-=======
-	encoder = RNNEncoder()
-	decoder = RNNDecoder()
-	
->>>>>>> c695d08a5917157365c6c4011171fae07f445702
 	catchingLs = []
 	for i, batch in data.sentence:
 		input, target = batch
