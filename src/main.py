@@ -1,18 +1,34 @@
-import model
 import torch
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
-from model import RNNEncoder, RNNDecoder
-from train import RNN, train, evaluation, save
+from model import Encoder, Decoder
+from train import RNN
+import pandas as pd
+import csv
+
+words = pd.read_table("../data/glove50d.txt", sep=" ", index_col=0, header=None, quoting=csv.QUOTE_NONE)
+
+def vec(w):
+  return words.loc[w].as_matrix()
 
 
 dataSize = 1000
 
 def main():
+	print("ready")
+	while True:
+		print(vec(input()))
+
 	data = "This is a sample sentence" # Pass the data through here later
 	rnn = RNN(data.input_size, data.output_size)
+<<<<<<< HEAD
 
+=======
+	encoder = RNNEncoder()
+	decoder = RNNDecoder()
+	
+>>>>>>> c695d08a5917157365c6c4011171fae07f445702
 	catchingLs = []
 	for i, batch in data.sentence:
 		input, target = batch
