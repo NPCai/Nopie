@@ -53,7 +53,7 @@ class RNN():
 		# Decoder stuff
 		while seqIn.data[0,0] != 1:
 			output, hidden_state = self.decoder.forward(input, hidden_state)
-			word = torch.max(output.data).reshape((1,1))
+			word = torch.max(output.data, dim = 1).reshape((1,1))
 			input = torch.LongTensor(word)
 			sentence.append(word)
 
