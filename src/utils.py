@@ -14,7 +14,7 @@ def vec(word):
 	return v
 
 def sentence_vec(sentence):
-	''' Takes in a spacy sentence object and produces 
+	''' Takes in a spacy sentence object and produces a 
 
 if __name__ == "__main__": # For testing purposes
 	print("ready")

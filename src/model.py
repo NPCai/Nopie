@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class RNNEncoder(nn.Module):
-	def __init__(self, embedding_size=500, hidden_size=1000, vocab_size):
+	def __init__(self, vocab_size, embedding_size=500, hidden_size=1000):
 		super().__init__()
 		self.embedding = nn.Embedding(vocab_size, hidden_size) # Lookup table from vocab_size to hidden_size
 		self.gru = nn.GRU(hidden_size, hidden_size)
@@ -12,7 +12,7 @@ class RNNEncoder(nn.Module):
 		return self.gru(embedded)[1] # [1] is the hidden state, can throw away output i.e. [0] # Only care about final result for sentence
 
 class RNNDecoder(nn.Module):
-	def __init__(self, embedding_size = 500, hidden_size=1000, output_size = 300, vocab_size):
+	def __init__(self, vocab_size, embedding_size = 500, hidden_size=1000, output_size = 300):
 		super().__init__()
 		self.embedding = nn.Embedding(vocab_size, hidden_size)
 		self.gru = nn.GRU(hidden_size, hidden_size)
