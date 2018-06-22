@@ -16,9 +16,10 @@ def vec(w):
 dataSize = 1000
 
 def main():
+	data = vec(input())
 	print("ready")
 	while True:
-		print(vec(input()))
+		print(data)
 
 	data = "This is a sample sentence" # Pass the data through here later
 	rnn = RNN(data.input_size, data.output_size)
@@ -34,9 +35,8 @@ def main():
 			rnn.save()
 
 def finalOutput():
-	data = "This is a sample sentence"
 	rnn = RNN(data.input_size, data.output_size)
-	print(rnn.eval(data))
+	print(rnn.eval(data)
 
 
 if __name__ == "__main__":
