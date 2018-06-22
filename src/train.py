@@ -34,7 +34,7 @@ class RNN():
 		loss = 0
 		for i in range(len(seqOut) - 1):
 			_, softmax, hidden = self.decoder.forward(seqOut[i], hidden)
-			loss += self.lossFn(softmax, seqOut[i+1][0])
+			loss += self.lossFn(softmax, seqOut[i+1][0]) # Calculating loss
 
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
@@ -43,11 +43,11 @@ class RNN():
 
 	def evaluation(self, seqIn):
 		# Encoder stuff
-		_, encoder_hidden = self.encoder.forward(1, encoder_hidden)
+		_, encoder_hidden = self.encoder.forward(1, encoder_hidden) # Forward propogation to hidden layer
 
 		sentence = []
 		seqIn = self.sos
 
-	def save(self):
+	def save(self): # Saving the trained network to a .ckpt file
 		torch.save(self.encoder.state_dict(), "encoder.ckpt")
 		torch.save(self.decoder.state_dict(), "decoder.ckpt")
