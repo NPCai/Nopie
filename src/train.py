@@ -33,8 +33,8 @@ class RNN():
 		seqOut.append(self.eos) # Append the end of sentence token into the end
 		loss = 0
 		for i in range(len(seqOut) - 1):
-			_, softmax, hidden = self.decoder.forward(seqOut[i], hidden)
-			loss += self.lossFn(softmax, seqOut[i+1][0])
+			_, softmax, hidden = self.decoder.forward(seqOut[i], hidden) # Use "teacher forcing" with probability one
+			loss += self.lossFn(softmax, seqOut[i+1][0]) # Sum the loss over the whole sequence
 
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
