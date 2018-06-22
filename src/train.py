@@ -48,6 +48,10 @@ class RNN():
 		sentence = []
 		seqIn = self.sos
 
+		# Decoder stuff
+		while seqIn.data[0,0] != 1:
+			
+
 	def save(self): # Saving the trained network to a .ckpt file
 		torch.save(self.encoder.state_dict(), "encoder.ckpt")
 		torch.save(self.decoder.state_dict(), "decoder.ckpt")
