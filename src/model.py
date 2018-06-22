@@ -3,7 +3,7 @@ import torch.nn.functional as F
 
 class RNNEncoder(nn.Module):
 	def __init__(self, embedding_size=500, hidden_size=1000, vocab_size):
-		super(RNNEncoder, self).__init__()
+		super().__init__()
 		self.embedding = nn.Embedding(vocab_size, hidden_size) # Lookup table from vocab_size to hidden_size
 		self.gru = nn.GRU(hidden_size, hidden_size)
 
@@ -13,7 +13,7 @@ class RNNEncoder(nn.Module):
 
 class RNNDecoder(nn.Module):
 	def __init__(self, embedding_size = 500, hidden_size=1000, output_size = 300, vocab_size):
-		super(RNNDecoder, self).__init__()
+		super().__init__()
 		self.embedding = nn.Embedding(vocab_size, hidden_size)
 		self.gru = nn.GRU(hidden_size, hidden_size)
 		self.linear = nn.Linear(hidden_size, output_size)
