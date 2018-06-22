@@ -1,4 +1,6 @@
 import model
+import numpy as np
+
 import torch
 import torch.nn as nn
 from torch import optim
@@ -50,7 +52,12 @@ class RNN():
 
 		# Decoder stuff
 		while seqIn.data[0,0] != 1:
-			
+			output, hidden_state = self.decoder.forward(input, hidden_state)
+			word = torch.max(output.data).reshape((1,1))
+			input = torch.LongTensor(word)
+			sentence.append(word)
+
+		return sentence
 
 	def save(self): # Saving the trained network to a .ckpt file
 		torch.save(self.encoder.state_dict(), "encoder.ckpt")
