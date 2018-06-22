@@ -3,9 +3,9 @@ import csv
 import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-words = pd.read_table("../data/glove50d.txt", sep=" ", index_col=0, header=None, quoting=csv.QUOTE_NONE)
+words = pd.read_table("../data/glove100d.txt", sep=" ", index_col=0, header=None, quoting=csv.QUOTE_NONE)
 
-def vec(word):
+def glove(word):
 	v = None
 	try:
 		v = torch.tensor(words.loc[word].values, requires_grad=False, device=device) # Don't update embeddings
@@ -13,11 +13,15 @@ def vec(word):
 		v = torch.zeros(50)
 	return v
 
-def sentence_vec(sentence):
+def sentence2vec(sentence):
 	pass
-	''' Takes in a spacy sentence object and produces a 
+	''' Takes in a sentence string and produces a variable-length vectorization augmented with spacy dep and pos'''
+
+def tuple2vec(tups):
+	''' Takes in a tuple and produces a variable-length vectorization '''
+	pass
 
 if __name__ == "__main__": # For testing purposes
 	print("ready")
 	while True:
-		print(vec(input())) '''
+		print(glove(input())) 
