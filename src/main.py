@@ -10,7 +10,6 @@ from train import RNN
 dataSize = 1000
 
 def main():
-
 	data = "This is a sample sentence" # Pass the data through here later
 	rnn = RNN(data.input_size, data.output_size)
 	encoder = RNNEncoder()
@@ -28,9 +27,8 @@ def main():
 			rnn.save()
 
 def finalOutput():
-	data = "This is a sample sentence"
 	rnn = RNN(data.input_size, data.output_size)
-	print(rnn.eval(data))
+	print(rnn.eval(data)
 
 
 if __name__ == "__main__":
