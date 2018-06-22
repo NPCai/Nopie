@@ -9,7 +9,7 @@ EOS_token = 1 # End of sentence
 
 class RNN():
 
-	def __init__(self, input_size, output_size):
+	def __init__(self, input_size, output_size, vocab_size):
 		super().__init__()
 		self.encoder = RNNEncoder(input_size) 
 		self.decoder = RNNDecoder(output_size)
