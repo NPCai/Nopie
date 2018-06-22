@@ -41,12 +41,12 @@ class RNN():
 		self.decoder_optimizer.step()
 		return loss.data[0]
 
-	def evaluation(self, input):
+	def evaluation(self, seqIn):
 		# Encoder stuff
 		_, encoder_hidden = self.encoder.forward(1, encoder_hidden)
 
 		sentence = []
-		input = self.sos
+		seqIn = self.sos
 
 	def save(self):
 		torch.save(self.encoder.state_dict(), "encoder.ckpt")
