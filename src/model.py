@@ -3,7 +3,7 @@ import torch.nn.functional as F
 import utils
 
 class RNNEncoder(nn.Module):
-	def __init__(self, embedding_size=100, hidden_size=1000): # TODO(jacob) use bigger word vectors/increase hidden size
+	def __init__(self, embedding_size=100, hidden_size=100): # TODO(jacob) use bigger word vectors/increase hidden size
 		super().__init__()
 		self.gru = nn.GRU(embedding_size, hidden_size)
 	def forward(self, sentence): # Takes all input at once, sentence is a tensor
@@ -11,7 +11,7 @@ class RNNEncoder(nn.Module):
 		return self.gru(sentence.view(len(sentence), 1, -1))[1] 
 
 class RNNDecoder(nn.Module):
-	def __init__(self, embedding_size=100, hidden_size=1000, vocab_size = utils.getVocabSize()):
+	def __init__(self, embedding_size=100, hidden_size=100, vocab_size = utils.getVocabSize()):
 		super().__init__()
 		self.gru = nn.GRU(embedding_size, hidden_size)
 		self.linear = nn.Linear(hidden_size, vocab_size)

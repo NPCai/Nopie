@@ -26,12 +26,13 @@ class EncoderDecoder():
 		# Decoder stuff
 		loss = 0
 		for i in range(len(seqOutOneHot) - 1):
-			print(utils.word2num(seqOutOneHot[i+1]))
+			print("Word2num", utils.num2word(seqOutOneHot[i+1]))
 			softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
 			loss += self.lossFn(softmax.view(1,-1), utils.onehot(seqOutOneHot[i+1]).view(1,-1)) # Calculating loss
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
+		print("Done with that sentence")
 		return loss.data[0]
 
 

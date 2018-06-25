@@ -39,7 +39,7 @@ def num2word(num):
 	return numToWord[num]
 
 def word2num(word):
-	''' Used for encoding output '''
+	''' Usedw for encoding output '''
 	v = None
 	try:
 		v = wordToNum[word]
