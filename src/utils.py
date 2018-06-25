@@ -4,6 +4,8 @@ import torch
 import spacy
 import wordvecs
 
+torch.set_default_tensor_type(torch.FloatTensor)
+
 def word2vec(word):
 	''' Converts a string to a vector using GloVe '''
 	v = None
