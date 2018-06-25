@@ -1,7 +1,6 @@
 import json
 
 ''' This file loads the data and randomizes the order or the sentences'''
-
 def getTopics(devSet):
 	TRAINFILE = "../data/tuples-train.json"
 	OUTPUT_FILE = "../data/tuples-output-train.json"
