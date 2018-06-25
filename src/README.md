@@ -8,7 +8,7 @@ This file implements the recurrent neural network object and also trains the net
 
 ### utils.py
 
-Uses the panda library to extract data from a set of pretrained GloVe word vectors. This file implements four key functions that can generate vectors from words or strings and also generate words or strings from vectors.
+Uses the pandas library to extract data from a set of pretrained GloVe word vectors. This file implements four key functions that can generate vectors from words or strings and also generate words or strings from vectors.
 This is important
 
 ### dataLoader.py
