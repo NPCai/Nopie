@@ -11,8 +11,19 @@ import dataLoader
 
 
 def main():
-	data = "This is a sample sentence" # Pass the data through here later
-	rnn = RNN(data.input_size, data.output_size)
+	ed = EncoderDecoder()
+	data = dataLoader.pairs(devSet=True)
+
+	for epoch in range(5):
+		for pair in data: # TODO(jacob), batches
+			seqIn = utils.seq2vec(pair['sentence'])
+			seqOut = [ed.sos]
+			for tup in pair['tuples']:
+				seqOut.append(utils.seq2vec[tup])
+			seqOut.append(ed.eos)
+			seqOut = torch.stack(seqOut)
+
+
 
 	catchingLs = []
 	for i, batch in data.sentence:
