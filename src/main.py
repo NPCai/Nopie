@@ -9,6 +9,7 @@ from wordvecs import *
 import json
 import dataLoader
 
+torch.set_default_tensor_type(torch.FloatTensor)
 
 def main():
 	ed = EncoderDecoder()
@@ -21,21 +22,12 @@ def main():
 			for tup in pair['tuples']:
 				seqOut.append(utils.seq2vec[tup])
 			seqOut.append(ed.eos)
-			seqOut = torch.stack(seqOut)
+			seqOut = torch.stack(torch.tensor(seqOut))
+			loss += ed.train(seqIn, seqOut)
 
-
-
-	catchingLs = []
-	for i, batch in data.sentence:
-		input, target = batch
-
-		loss = rnn.train(input, target)
-		catchingLs.append(loss)
-
-		if i % 100 is 0:
-			print("Loss at epoch %d: %.2f" % (i, loss))
-			rnn.save()
-			print("Saved", "\n")
+		print("Total loss at epoch %d: %.2f" % (epoch, loss))
+		print("Saved", "\n")
+	ed.save()
 
 def finalOutput():
 	sentence = "This is a sample sentence" # Pass data through later
