@@ -4,7 +4,9 @@ import utils
 import torch
 import torch.nn as nn
 from torch import optim
+from model import *
 import torch.nn.functional as F
+import utils
 
 class EncoderDecoder():
 	def __init__(self):
@@ -14,7 +16,7 @@ class EncoderDecoder():
 		self.lossFn = nn.CrossEntropyLoss()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
-		self.sos, self.eos = torch.zeros(100), torch.ones(100) # start and end special tokens, unk is handled by utils
+		self.sos, self.eos = torch.zeros(utils.getVocabSize()), torch.ones(utils.getVocabSize()) # start and end special tokens, unk is handled by utils
 
 	def train(self, seqIn, seqOut): 
 		''' Train one iteration, no batch '''
