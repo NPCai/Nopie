@@ -56,5 +56,5 @@ class RNN():
 		return sentence
 
 	def save(self): # Saving the trained network to a .ckpt file
-		torch.save(self.encoder.state_dict(), "encoder.ckpt")
-		torch.save(self.decoder.state_dict(), "decoder.ckpt")
+		torch.save(self.encoder.state_dict(), "RNNencoder.ckpt")
+		torch.save(self.decoder.state_dict(), "RNNdecoder.ckpt")

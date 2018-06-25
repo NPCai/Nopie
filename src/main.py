@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from model import RNNEncoder, RNNDecoder
 from train import RNN
 from utils import word2vec, vec2word, string2vec, vec2string
-import wordvecs
+from wordvecs import *
 import json
 import dataLoader
 
