@@ -17,7 +17,7 @@ class EncoderDecoder():
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
 
-	def train(self, seqIn, seqOut): 
+	def train(self, seqIn, seqOutOneHot, seqOutEmbedding): 
 		''' Train one iteration, no batch '''
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
@@ -25,10 +25,10 @@ class EncoderDecoder():
 		hidden = self.encoder(seqIn) # Encode sentence
 		# Decoder stuff
 		loss = 0
-		for i in range(len(seqOut) - 1):
-			_, softmax, hidden = self.decoder(utils.onehot(seqOut[i]), hidden)
-			loss += self.lossFn(softmax, seqOut[i+1][0]) # Calculating loss
-
+		for i in range(len(seqOutOneHot) - 1):
+			softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
+			target = utils.onehot(seqOutOneHot[i+1])
+			loss += self.lossFn(softmax.float(), target.view(1,-1).float()) # Calculating loss
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()

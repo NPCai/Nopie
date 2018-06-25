@@ -8,6 +8,8 @@ import utils
 
 torch.set_default_tensor_type(torch.FloatTensor)
 ed = EncoderDecoder()
+STARTembed = torch.zeros(100)
+ENDembed = torch.ones(100)
 START = -2
 END = -1
 
@@ -16,12 +18,14 @@ for epoch in range(5):
 	loss = 0
 	for pair in data: # TODO(jacob), batches, randomization
 		seqIn = utils.string2gloves(pair['sentence'])
-		seqOut = [START]
+		seqOutOneHot = [START]
+		seqOutEmbedding = [STARTembed]
 		for tup in pair['tuples']:
-			seqOut.extend(utils.sentence2nums(tup))
-		seqOut.append(END)
-		print(seqOut)
-		loss += ed.train(seqIn, seqOut)
+			seqOutOneHot.extend(utils.sentence2nums(tup))
+			seqOutEmbedding.extend(utils.string2gloves(tup))
+		seqOutOneHot.append(END)
+		seqOutEmbedding.append(ENDembed)
+		loss += ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
 
 	print("Total loss at epoch %d: %.2f" % (epoch, loss))
 	print("Saved", "\n")
