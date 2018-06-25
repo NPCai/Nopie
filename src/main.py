@@ -14,9 +14,10 @@ START = -2
 END = -1
 
 data = dataLoader.pairs(devSet=True)
-for epoch in range(5): 
+for epoch in range(10): 
 	loss = 0
 	for pair in data: # TODO(jacob), batches, randomization
+		print(pair)
 		seqIn = utils.string2gloves(pair['sentence'])
 		seqOutOneHot = [START]
 		seqOutEmbedding = [STARTembed]

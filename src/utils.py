@@ -58,7 +58,6 @@ def getVocabSize():
 	return len(words)
 
 def onehot(index):
-	print(index)
 	if index == -1:
 		# This is the end of sentence token
 		return torch.ones(len(words)).float()

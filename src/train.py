@@ -13,7 +13,7 @@ class EncoderDecoder():
 		super().__init__()
 		self.encoder = RNNEncoder() 
 		self.decoder = RNNDecoder()
-		self.lossFn = nn.CrossEntropyLoss()
+		self.lossFn = nn.L1Loss()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
 
@@ -26,12 +26,14 @@ class EncoderDecoder():
 		# Decoder stuff
 		loss = 0
 		for i in range(len(seqOutOneHot) - 1):
+			print(utils.word2num(seqOutOneHot[i+1]))
 			softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
-			loss += self.lossFn(softmax, seqOutOneHot[i+1]) # Calculating loss
+			loss += self.lossFn(softmax.view(1,-1), utils.onehot(seqOutOneHot[i+1]).view(1,-1)) # Calculating loss
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
 		return loss.data[0]
+
 
 	'''def evaluation(self, seqIn):
 		# Encoder stuff
