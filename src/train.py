@@ -9,12 +9,11 @@ import torch.nn.functional as F
 SOS_token = 0 # Start of sentence
 EOS_token = 1 # End of sentence
 
-class RNN():
-
-	def __init__(self, input_size, output_size, vocab_size):
+class EncoderDecoder():
+	def __init__(self):
 		super().__init__()
-		self.encoder = RNNEncoder(input_size) 
-		self.decoder = RNNDecoder(output_size)
+		self.encoder = RNNEncoder() 
+		self.decoder = RNNDecoder()
 		self.lossFn = nn.CrossEntropyLoss()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
