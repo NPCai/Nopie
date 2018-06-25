@@ -4,13 +4,13 @@ import torch
 import spacy
 import wordvecs
 
-torch.set_default_tensor_type(torch.FloatTensor)
+# torch.set_default_tensor_type(torch.FloatTensor)
 
 def word2vec(word):
 	''' Converts a string to a vector using GloVe '''
 	v = None
 	try:
-		v = torch.tensor(wordvecs.words.loc[word].values, requires_grad=False, device=wordvecs.device) # Don't update embeddings
+		v = torch.tensor(wordvecs.words.loc[word].values, requires_grad=False, device=wordvecs.device).float() # Don't update embeddings
 	except KeyError:
 		v = torch.zeros(100)
 	return v
@@ -30,7 +30,7 @@ def string2vec(sentence):
 	vecs = []
 	for token in doc:
 		vecs.append(word2vec(token.lower_))
-	return torch.tensor(torch.stack(vecs), requires_grad=False) # Have to stack so the tensors are not on the inside
+	return torch.tensor(torch.stack(vecs), requires_grad=False).float() # Have to stack so the tensors are not on the inside
 
 def vec2string(vectors):
 	sentence = []

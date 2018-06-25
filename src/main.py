@@ -16,10 +16,10 @@ def main():
 
 	for epoch in range(5):
 		for pair in data: # TODO(jacob), batches
-			seqIn = utils.seq2vec(pair['sentence'])
+			seqIn = utils.string2vec(pair['sentence'])
 			seqOut = [ed.sos]
 			for tup in pair['tuples']:
-				seqOut.append(utils.seq2vec[tup])
+				seqOut.append(utils.string2vec([tup]))
 			seqOut.append(ed.eos)
 			seqOut = torch.stack(seqOut)
 
