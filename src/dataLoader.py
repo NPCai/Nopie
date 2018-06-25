@@ -3,6 +3,7 @@ import sys
 import numpy as np
 
 
+
 TRAINFILE = "../data/tuples-train.json"
 OUTPUT_FILE = "../data/tuples-output-train.json"
 
@@ -15,4 +16,3 @@ def gimme_Data(sentence, tuple, reverse=False):
 	with open(TRAINFILE, encoding = "utf8") as f:
 		json_set = json.load(f)
 		dataset = json_set['data']
-
