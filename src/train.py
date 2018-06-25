@@ -16,7 +16,6 @@ class EncoderDecoder():
 		self.lossFn = nn.CrossEntropyLoss()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
-		self.sos, self.eos = torch.zeros(utils.getVocabSize()), torch.ones(utils.getVocabSize()) # start and end special tokens, unk is handled by utils
 
 	def train(self, seqIn, seqOut): 
 		''' Train one iteration, no batch '''
@@ -24,10 +23,7 @@ class EncoderDecoder():
 		self.decoder_optimizer.zero_grad()
 
 		hidden = self.encoder(seqIn) # Encode sentence
-
 		# Decoder stuff
-		seqOut.insert(0, self.sos) # Insert the start of sentence token into the first position
-		seqOut.append(self.eos) # Append the end of sentence token into the end
 		loss = 0
 		for i in range(len(seqOut) - 1):
 			_, softmax, hidden = self.decoder(utils.onehot(seqOut[i]), hidden)
