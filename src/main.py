@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
-from model import Encoder, Decoder
+from model import RNNEncoder, RNNDecoder
 from train import RNN
-from utils import glove, string2vec, vec2string
+from utils import word2vec, vec2word, string2vec, vec2string
+import wordvecs
 
 
 dataSize = 1000
