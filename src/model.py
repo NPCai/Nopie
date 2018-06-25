@@ -10,11 +10,11 @@ class RNNEncoder(nn.Module):
 		return self.gru(sentence.view(len(sentence), 1, -1))[1] 
 
 class RNNDecoder(nn.Module):
-	def __init__(self, hidden_size=100, output_size = 100):
+	def __init__(self, hidden_size=100, vocab_size = 100):
 		super().__init__()
 		self.gru = nn.GRU(hidden_size, hidden_size)
-		self.linear = nn.Linear(hidden_size, output_size)
+		self.linear = nn.Linear(hidden_size, vocab_size)
 	def forward(self, word, hidden): # Takes one input at a time
-		hidden_state = self.gru(word.view(1, 1, -1), hidden)[1]
+		new_hidden = self.gru(word.view(1, 1, -1), hidden)[1]
 		probs = F.softmax(self.linear(hidden)) # i.e. the probs at the t'th step for beam search
-		return probs, hidden_state
+		return probs, new_hidden
