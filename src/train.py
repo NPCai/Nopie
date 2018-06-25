@@ -6,9 +6,6 @@ import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
 
-SOS_token = 0 # Start of sentence
-EOS_token = 1 # End of sentence
-
 class EncoderDecoder():
 	def __init__(self):
 		super().__init__()
