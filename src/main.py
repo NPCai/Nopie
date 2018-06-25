@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from train import EncoderDecoder
 import dataLoader
 import utils
+import numpy as np
 
 torch.set_default_tensor_type(torch.FloatTensor)
 ed = EncoderDecoder()
@@ -14,9 +15,12 @@ START = -2
 END = -1
 
 data = dataLoader.pairs(devSet=True)
-for epoch in range(10): 
+for batch in range(100): 
 	loss = 0
-	for pair in data: # TODO(jacob), batches, randomization
+	minibatch = []
+	for i in np.random.randint(len(data), size=64):
+		minibatch.append(data[i])
+	for pair in minibatch: # TODO(jacob), batches, randomization
 		print(pair)
 		seqIn = utils.string2gloves(pair['sentence'])
 		seqOutOneHot = [START]
@@ -26,11 +30,12 @@ for epoch in range(10):
 			seqOutEmbedding.extend(utils.string2gloves(tup))
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
-		loss += ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
+		ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
+	loss = ed.backprop()
 
-	print("Total loss at epoch %d: %.2f" % (epoch, loss))
-	print("Saved", "\n")
+	print("Total loss at epoch %d: %.2f" % (batch, loss))
 
+print("Saved", "\n")
 ed.save()
 
 sentence = seq2vec(input())

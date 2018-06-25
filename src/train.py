@@ -14,6 +14,7 @@ class EncoderDecoder():
 		self.encoder = RNNEncoder() 
 		self.decoder = RNNDecoder()
 		self.lossFn = nn.L1Loss()
+		self.loss = 0
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
 
@@ -24,16 +25,19 @@ class EncoderDecoder():
 
 		hidden = self.encoder(seqIn) # Encode sentence
 		# Decoder stuff
-		loss = 0
+		
 		for i in range(len(seqOutOneHot) - 1):
-			print("Word2num", utils.num2word(seqOutOneHot[i+1]))
 			softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
-			loss += self.lossFn(softmax.view(1,-1), utils.onehot(seqOutOneHot[i+1]).view(1,-1)) # Calculating loss
-		loss.backward() # Compute grads with respect to the network
+			self.loss += self.lossFn(softmax.view(1,-1), utils.onehot(seqOutOneHot[i+1]).view(1,-1)) # Calculating loss
+	
+	def backprop(self):
+		self.loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
-		print("Done with that sentence")
-		return loss.data[0]
+		reportedLoss = self.loss.data[0]
+		self.loss = 0
+		return reportedLoss
+		
 
 
 	'''def evaluation(self, seqIn):
