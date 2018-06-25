@@ -2,6 +2,7 @@ import json
 import sys
 import numpy as np
 
+
 TRAINFILE = "../data/tuples-train.json"
 OUTPUT_FILE = "../data/tuples-output-train.json"
 
