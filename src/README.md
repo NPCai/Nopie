@@ -1,15 +1,14 @@
 ### model.py
 
-Contains the encoder and decoder for the recurrent neural network.
+Contains the encoder and decoder for the recurrent neural network. While it may seem that the model is lacking in depth, we felt that a minimal implementation would be more than enough for this project.
 
 ### train.py
 
-This file implements the recurrent neural network object and also trains the network. Using a cross entropy loss function, and an adam optimization algorithm, it encodes the tuple data and then calculates loss based on the decoded output.
+This file implements the recurrent neural network object and also trains the network. Using a cross entropy loss function, and an adam optimization algorithm, it encodes the tuple data and then calculates loss based on the decoded output. The evaluation function will use the calculated probability to form output tuples.
 
 ### utils.py
 
-Uses the pandas library to extract data from a set of pretrained GloVe word vectors. This file implements four key functions that can generate vectors from words or strings and also generate words or strings from vectors.
-This is important
+Uses the panda library to extract data from a set of pretrained GloVe word vectors. This file implements key functions that can generate transition between, words/strings, vectors, and a one-hot encoded structure.
 
 ### dataLoader.py
 
@@ -17,4 +16,4 @@ Takes the data in ../data/tuples-train.json and adds it to a dataset that can be
 
 ### main.py
 
-Used to generate 
+Used to generate JSON file with the neural network's produced tuples. It takes in tuple sentence pairs from the Squadie output dataset and runs it through the RNN encoder decoder and the train.py framework.
