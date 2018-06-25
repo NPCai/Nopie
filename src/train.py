@@ -1,6 +1,6 @@
 import model
 import numpy as np
-
+import utils
 import torch
 import torch.nn as nn
 from torch import optim
@@ -18,10 +18,7 @@ class RNN():
 		self.lossFn = nn.CrossEntropyLoss()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
-
-		sos, eos = torch.LongTensor(1, 1).zero_(), torch.LongTensor(1, 1).zero_()
-		sos[0,0], eos[0,0] = 0, 1 # Defines the SOS and EOS as 1x1 tensors with values 0 and 1 respectively
-		self.sos, self.eos = sos, eos
+		self.sos, self.eos = torch.zeros(100), torch.ones(100) # start and end special tokens, unk is handled by utils
 
 	def train(self, seqIn, seqOut): 
 		''' Train one iteration, no batch '''
@@ -56,7 +53,6 @@ class RNN():
 			word = torch.max(output.data, dim = 1).reshape((1,1))
 			input = torch.LongTensor(word)
 			sentence.append(word)
-
 		return sentence
 
 	def save(self): # Saving the trained network to a .ckpt file
