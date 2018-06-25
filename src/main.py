@@ -7,13 +7,8 @@ from train import RNN
 from utils import word2vec, vec2word, string2vec, vec2string
 import wordvecs
 import json
+import dataLoader
 
-
-JSON_FILE = "../data/tuples-dev.json"
-
-def gimme_Data(sentence, tuple, reverse=False):
-	print("Extracting...")
-	
 
 def main():
 	data = "This is a sample sentence" # Pass the data through here later
