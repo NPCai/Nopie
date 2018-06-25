@@ -27,8 +27,7 @@ class EncoderDecoder():
 		loss = 0
 		for i in range(len(seqOutOneHot) - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
-			target = utils.onehot(seqOutOneHot[i+1])
-			loss += self.lossFn(softmax.float(), target.view(1,-1).float()) # Calculating loss
+			loss += self.lossFn(softmax, seqOutOneHot[i+1]) # Calculating loss
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
