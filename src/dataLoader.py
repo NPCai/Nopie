@@ -12,12 +12,13 @@ def getTopics(devSet):
 		json_set = json.load(f)
 		dataset = json_set['data']
 		print(json_set['version'])
+	return dataset
 
 def pairs(devSet):
 	pairList = []
 	data = getTopics(devSet)
 	for topic in data:
-		for paragraph in data['paragraphs']:
+		for paragraph in topic['paragraphs']:
 			for pair in paragraph['pairs']:
 				pairList.append(pair)
 	return pairList

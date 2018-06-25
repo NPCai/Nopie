@@ -3,7 +3,7 @@ import csv
 import torch
 import spacy
 
-# torch.set_default_tensor_type(torch.FloatTensor)
+torch.set_default_tensor_type(torch.FloatTensor)
 nlp = spacy.load('en')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 words = pd.read_table("../data/glove_100d.txt", sep=" ", index_col=0, header=None, quoting=csv.QUOTE_NONE)
@@ -18,7 +18,7 @@ def word2glove(word):
 	''' Converts a string to a vector using GloVe, used for encoding input '''
 	v = None
 	try:
-		v = torch.tensor(words.loc[word].values, requires_grad=False, device=device) # Don't update embeddings
+		v = torch.tensor(words.loc[word].values, requires_grad=False, device=device).float() # Don't update embeddings
 	except KeyError:
 		v = torch.zeros(100).float()
 	return v
@@ -44,7 +44,7 @@ def word2num(word):
 	try:
 		v = wordToNum[word]
 	except KeyError:
-		v = torch.zeros(len(words)).float()
+		v = word2num("unk") # return the unk token if not in dataset
 	return v
 
 def sentence2nums(sentence):
@@ -56,3 +56,12 @@ def sentence2nums(sentence):
 
 def getVocabSize():
 	return len(words)
+
+def onehot(index):
+	if index == -1:
+		# This is the end of sentence token
+		return torch.ones(len(words)).float()
+	x = torch.zeros(len(words)).float()
+	if index != -2:
+		x[index] = 1.0
+	return x

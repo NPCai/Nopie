@@ -17,5 +17,5 @@ class RNNDecoder(nn.Module):
 		self.linear = nn.Linear(hidden_size, vocab_size)
 	def forward(self, word, hidden): # Takes one input at a time
 		new_hidden = self.gru(word.view(1, 1, -1), hidden)[1]
-		probs = F.softmax(self.linear(hidden)) # i.e. the probs at the t'th step for beam search
+		probs = F.softmax(self.linear(new_hidden)) # i.e. the probs at the t'th step for beam search
 		return probs, new_hidden
