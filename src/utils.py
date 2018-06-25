@@ -16,11 +16,10 @@ def word2vec(word):
 def vec2word(vec): # Expects a torch tensor
 	w = ""
 	try:
-		w = wordvecs.vecs[vec]
+		w = wordvecs.vecs[str(vec)]
 	except KeyError:
 		w = ""
 	return w	
-
 
 def string2vec(sentence):
 	''' Takes in a sentence string and produces a variable-length vectorization'''
@@ -34,11 +33,13 @@ def string2vec(sentence):
 def vec2string(vectors):
 	sentence = []
 	for vector in vectors:
+		print(vector)
 		sentence.append(vec2word(vector))
 	return sentence	
 
 
-if __name__ == "__main__": # For testing purposes
+if __name__ == "__main__": # For testing purposes, convert into seq then back to words
 	print("ready")
 	while True:
-		print(vec2string(string2vec(input()))) 
+		x =  string2vec(input())
+		print(vec2string(x))
