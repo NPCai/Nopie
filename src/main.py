@@ -10,7 +10,6 @@ import time
 from timey import *
 
 ed = EncoderDecoder()
-
 print("Training on dataset...","\n")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -19,14 +18,15 @@ torch.set_default_tensor_type(torch.FloatTensor)
 STARTembed = torch.zeros(100).to(device)
 ENDembed = torch.ones(100).to(device)
 
-UNK = utils.getVocabSize() - 3
-START = utils.getVocabSize() - 2
-END = utils.getVocabSize() - 1
+UNK = utils.word2num("UNK")
+START = utils.word2num("START")
+END = utils.word2num("END")
 
-startTime = time.time()
-batchRange = 200
+#startTime = time.time()
+batchRange = 100000
 
 data = dataLoader.pairs(devSet=True)
+
 for batch in range(batchRange): 
 	loss = 0
 	minibatch = []
@@ -43,12 +43,14 @@ for batch in range(batchRange):
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 		ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
+
 	loss = ed.backprop()
 
-	if batch % 50 == 1:
-		print('Total time elapsed: %s (Estimated time remaining: %d %d%%)' % (timeSince(startTime, batch / batchRange),batch, batch / batchRange * 100))
+	#if batch % 50 == 1:
+	#	print('Total time elapsed: %s (Estimated time remaining: %d %d%%)' % (timeSince(startTime, batch / batchRange),batch, batch / batchRange * 100))
 
 
+	print("Tuple prediciton:  ", ed.predict(seqIn))
 	print("Total loss at epoch %d: %.2f" % (batch, loss))
 
 print("Saved", "\n")
