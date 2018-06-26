@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
-from train import EncoderDecoder
+from train import *
 import dataLoader
 import utils
 import numpy as np
@@ -10,6 +10,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.set_default_tensor_type(torch.FloatTensor)
 
 ed = EncoderDecoder()
+loadModel()
+
 STARTembed = torch.zeros(100).to(device)
 ENDembed = torch.ones(100).to(device)
 
@@ -21,7 +23,7 @@ data = dataLoader.pairs(devSet=True)
 for batch in range(100): 
 	loss = 0
 	minibatch = []
-	for i in np.random.randint(len(data), size=5):
+	for i in np.random.randint(len(data), size=1):
 		minibatch.append(data[i])
 	for pair in minibatch: # TODO(jacob), batches, randomization
 		print(pair)
@@ -41,6 +43,6 @@ for batch in range(100):
 print("Saved", "\n")
 ed.save()
 
-sentence = seq2vec(input())
-finalOutput = rnn.evaluation(vectors)
-print(data.vec2string(finalOutput))
+# sentence = seq2vec(input())
+# finalOutput = rnn.evaluation(vectors)
+# print(data.vec2string(finalOutput))
