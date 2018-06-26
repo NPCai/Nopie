@@ -18,7 +18,7 @@ def word2glove(word):
 	''' Converts a string to a vector using GloVe, used for encoding input '''
 	v = None
 	try:
-		v = torch.tensor(words.loc[word].values, requires_grad=False, device=device).float() # Don't update embeddings
+		v = torch.tensor(words.loc[word].values, requires_grad=False).to(device).float() # Don't update embeddings
 	except KeyError:
 		v = torch.zeros(100).float()
 	return v
@@ -30,7 +30,7 @@ def string2gloves(sentence):
 	vecs = []
 	for token in doc:
 		vecs.append(word2glove(token.lower_))
-	return torch.tensor(torch.stack(vecs), requires_grad=False).float() # Have to stack so the tensors are not on the inside
+	return torch.tensor(torch.stack(vecs), requires_grad=False).to(device).float() # Have to stack so the tensors are not on the inside
 
 def num2word(num): 
 	''' Used for beam search '''
@@ -60,8 +60,8 @@ def getVocabSize():
 def onehot(index):
 	if index == -1:
 		# This is the end of sentence token
-		return torch.ones(len(words)).float()
-	x = torch.zeros(len(words)).float()
+		return torch.ones(len(words)).to(device).float()
+	x = torch.zeros(len(words)).to(device).float()
 	if index != -2:
 		x[index] = 1.0
 	return x
