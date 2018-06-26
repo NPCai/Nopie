@@ -8,6 +8,9 @@ import utils
 import numpy as np
 
 ed = EncoderDecoder()
+
+print("Training on dataset...","\n")
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.set_default_tensor_type(torch.FloatTensor)
 
