@@ -8,7 +8,6 @@ import utils
 import numpy as np
 
 ed = EncoderDecoder()
-
 print("Training on dataset...","\n")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -17,9 +16,9 @@ torch.set_default_tensor_type(torch.FloatTensor)
 STARTembed = torch.zeros(100).to(device)
 ENDembed = torch.ones(100).to(device)
 
-UNK = utils.getVocabSize() - 3
-START = utils.getVocabSize() - 2
-END = utils.getVocabSize() - 1
+UNK = utils.word2num("UNK")
+START = utils.word2num("START")
+END = utils.word2num("END")
 
 data = dataLoader.pairs(devSet=True)
 for batch in range(100): 
@@ -38,6 +37,7 @@ for batch in range(100):
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 		ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
+		print("Tuple prediciton:  ", ed.predict(seqIn))
 	loss, time = ed.backprop()
 
 	print("Total loss at epoch %d: %.2f, took time %d" % (batch, loss, time))

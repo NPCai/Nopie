@@ -24,11 +24,6 @@ class EncoderDecoder():
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding): 
 		''' Train one iteration, no batch '''
 		hidden = self.encoder(seqIn) # Encode sentence
-		# Decoder stuff
-		
-		#for i in range(len(seqOutOneHot) - 1):
-		#	softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
-		#	self.loss += self.lossFn(softmax.view(1,-1), utils.onehot(seqOutOneHot[i+1]).view(1,-1)) # Calculating loss
 		for i in range(len(seqOutOneHot) - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
 			self.loss += self.lossFn(softmax.view(1,-1), torch.tensor([seqOutOneHot[i+1]]).to(device))
@@ -49,20 +44,20 @@ class EncoderDecoder():
 		after = time.time()
 		return reportedLoss, (after - before)
 
-	'''def evaluation(self, seqIn):
-		# Encoder stuff
-		_, encoder_hidden = self.encoder(encoder_hidden) # Forward propogation to hidden layer
-
-		sentence = []
-		seqIn = self.sos
-
-		# Decoder stuff
-		while seqIn.data[0,0] != 1:
-			output, hidden_state = self.decoder(input, hidden_state)
-			word = torch.max(output.data, dim = 1).reshape((1,1))
-			input = torch.LongTensor(word)
-			sentence.append(word)
-		return sentence'''
+	def predict(self, seqIn):
+		with torch.no_grad():
+			hidden = self.encoder(seqIn) # Forward propogation to hidden layer
+			sentence = []
+			glove = torch.zeros(100).to(device) # start token, all zeros
+			word = "START"
+			max_len, num_words = 40, 0 # failsafe
+			while word != "END" and num_words < max_len:
+				softmax, hidden = self.decoder(glove, hidden)
+				word = utils.num2word(torch.argmax(softmax).item())
+				sentence.append(word)
+				glove = utils.word2glove(word)
+				num_words += 1
+			return sentence
 
 	def save(self): # Saving the trained network to a .ckpt file
 		torch.save(self.encoder.state_dict(), "RNNencoder.ckpt")
