@@ -6,9 +6,7 @@ from train import EncoderDecoder
 import dataLoader
 import utils
 import numpy as np
-
-# TODO(jacob): resolve tabs becoming unk tokens
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.set_default_tensor_type(torch.FloatTensor)
 
 ed = EncoderDecoder()
