@@ -21,7 +21,7 @@ START = utils.word2num("START")
 END = utils.word2num("END")
 
 data = dataLoader.pairs(devSet=True)
-for batch in range(100): 
+for batch in range(10000): 
 	loss = 0
 	minibatch = []
 	for i in np.random.randint(len(data), size=1):
