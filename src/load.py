@@ -9,6 +9,13 @@ import numpy as np
 
 tORe = 0
 
+ed,tORe = loadModel()
+if tORe == 0:
+	sys.exit("Evaluation not programmed yet")
+else:
+	print("Training on dataset...","\n")
+
+
 def loadModel():
 	ed = EncoderDecoder()
 	try:
