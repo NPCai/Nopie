@@ -7,10 +7,15 @@ import dataLoader
 import utils
 import numpy as np
 
-def loadModel(self):
+tORe = 0
+
+def loadModel():
+	ed = EncoderDecoder()
 	print("evaluate or train: ")
 	if input() == "evaluate":
 		try:
 			ed = ed.load()
 		except IOError:
 			print("You have no saved model","\n","Creating a new model...","\n")
+			tORe = 1
+	return ed, tORe

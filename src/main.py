@@ -6,11 +6,13 @@ from train import *
 import dataLoader
 import utils
 import numpy as np
+from load import *
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.set_default_tensor_type(torch.FloatTensor)
 
-ed = EncoderDecoder()
-loadModel()
+ed,tORe = loadModel()
+if tORe == 0:
+	sys.exit("Evaluation not programmed yet")
 
 STARTembed = torch.zeros(100).to(device)
 ENDembed = torch.ones(100).to(device)
