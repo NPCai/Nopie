@@ -13,6 +13,8 @@ torch.set_default_tensor_type(torch.FloatTensor)
 ed,tORe = loadModel()
 if tORe == 0:
 	sys.exit("Evaluation not programmed yet")
+else:
+	print("Training on dataset...","\n")
 
 STARTembed = torch.zeros(100).to(device)
 ENDembed = torch.ones(100).to(device)
