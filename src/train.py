@@ -14,7 +14,7 @@ class EncoderDecoder():
 		super().__init__()
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
-		self.lossFn = nn.L1Loss()
+		self.lossFn = nn.NLLLoss()
 		self.loss = 0
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
@@ -24,12 +24,16 @@ class EncoderDecoder():
 		hidden = self.encoder(seqIn) # Encode sentence
 		# Decoder stuff
 		
+		#for i in range(len(seqOutOneHot) - 1):
+		#	softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
+		#	self.loss += self.lossFn(softmax.view(1,-1), utils.onehot(seqOutOneHot[i+1]).view(1,-1)) # Calculating loss
 		for i in range(len(seqOutOneHot) - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
-			self.loss += self.lossFn(softmax.view(1,-1), utils.onehot(seqOutOneHot[i+1]).view(1,-1)) # Calculating loss
-	
+			self.loss += self.lossFn(softmax.view(1,-1), torch.tensor([seqOutOneHot[i+1]]).to(device))
+
 	def backprop(self):
 		print("doing backward")
+		self.loss = self.loss / 5
 		self.loss.backward() # Compute grads with respect to the network
 		print("doing encoder step")
 		self.encoder_optimizer.step() # Update using the stored grad
@@ -38,7 +42,7 @@ class EncoderDecoder():
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
 		reportedLoss = self.loss.data[0]
-		loss.reset()
+		self.loss = 0
 		return reportedLoss
 
 	'''def evaluation(self, seqIn):

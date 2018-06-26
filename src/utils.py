@@ -13,6 +13,13 @@ wordToNum = {}
 for num, word in enumerate(words.index.values):
 	numToWord[num] = word
 	wordToNum[word] = num
+	
+numToWord[num+1] = "UNK"
+numToWord[num+2] = "START"
+numToWord[num+3] = "END"
+wordToNum["UNK"] = num+1
+wordToNum["START"] = num+2
+wordToNum["END"] = num+3
 
 def word2glove(word):
 	''' Converts a string to a vector using GloVe, used for encoding input '''
@@ -55,13 +62,13 @@ def sentence2nums(sentence):
 	return nums
 
 def getVocabSize():
-	return len(words)
+	return len(words) + 3 # for START, END, UNK
 
 def onehot(index):
 	if index == -1:
 		# This is the end of sentence token
-		return torch.ones(len(words)).to(device).float()
-	x = torch.zeros(len(words)).to(device).float()
+		return torch.ones(getVocabSize()).to(device).float()
+	x = torch.zeros(getVocabSize()).to(device).float()
 	if index != -2:
 		x[index] = 1.0
 	return x

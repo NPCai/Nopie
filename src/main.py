@@ -14,14 +14,16 @@ torch.set_default_tensor_type(torch.FloatTensor)
 ed = EncoderDecoder()
 STARTembed = torch.zeros(100).to(device)
 ENDembed = torch.ones(100).to(device)
-START = -2
-END = -1
+
+UNK = utils.getVocabSize() - 3
+START = utils.getVocabSize() - 2
+END = utils.getVocabSize() - 1
 
 data = dataLoader.pairs(devSet=True)
 for batch in range(100): 
 	loss = 0
 	minibatch = []
-	for i in np.random.randint(len(data), size=20):
+	for i in np.random.randint(len(data), size=5):
 		minibatch.append(data[i])
 	for pair in minibatch: # TODO(jacob), batches, randomization
 		print(pair)
