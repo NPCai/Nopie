@@ -38,7 +38,7 @@ for batch in range(10000):
 		seqOutEmbedding.append(ENDembed)
 		ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
 		print("Tuple prediciton:  ", ed.predict(seqIn))
-	loss, time = ed.backprop()
+		loss, time = ed.backprop()
 
 	print("Total loss at epoch %d: %.2f, took time %d" % (batch, loss, time))
 
