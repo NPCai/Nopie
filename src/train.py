@@ -34,7 +34,6 @@ class EncoderDecoder():
 			self.loss += self.lossFn(softmax.view(1,-1), torch.tensor([seqOutOneHot[i+1]]).to(device))
 
 	def backprop(self):
-		before = time.time()
 		print("doing backward")
 		self.loss = self.loss / 1
 		self.loss.backward() # Compute grads with respect to the network
@@ -46,8 +45,7 @@ class EncoderDecoder():
 		self.decoder_optimizer.zero_grad()
 		reportedLoss = self.loss.item()
 		self.loss = 0
-		after = time.time()
-		return reportedLoss, (after - before)
+		return reportedLoss
 
 	'''def evaluation(self, seqIn):
 		# Encoder stuff

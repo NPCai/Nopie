@@ -6,6 +6,8 @@ from train import *
 import dataLoader
 import utils
 import numpy as np
+import time
+from timey import *
 
 ed = EncoderDecoder()
 
@@ -21,8 +23,11 @@ UNK = utils.getVocabSize() - 3
 START = utils.getVocabSize() - 2
 END = utils.getVocabSize() - 1
 
+startTime = time.time()
+batchRange = 200
+
 data = dataLoader.pairs(devSet=True)
-for batch in range(100): 
+for batch in range(batchRange): 
 	loss = 0
 	minibatch = []
 	for i in np.random.randint(len(data), size=1):
@@ -38,9 +43,13 @@ for batch in range(100):
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 		ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
-	loss, time = ed.backprop()
+	loss = ed.backprop()
 
-	print("Total loss at epoch %d: %.2f, took time %d" % (batch, loss, time))
+	if batch % 50 == 1:
+		print('Total time elapsed: %s (Estimated time remaining: %d %d%%)' % (timeSince(startTime, batch / batchRange),batch, batch / batchRange * 100))
+
+
+	print("Total loss at epoch %d: %.2f" % (batch, loss))
 
 print("Saved", "\n")
 ed.save()
