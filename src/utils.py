@@ -21,7 +21,7 @@ def word2glove(word):
 		v = torch.tensor(words.loc[word].values, requires_grad=False).to(device).float() # Don't update embeddings
 	except KeyError:
 		v = torch.zeros(100).float()
-	return v
+	return v.to(device)
 
 def string2gloves(sentence):
 	''' Takes in a sentence string and produces a variable-length vectorization '''
@@ -30,7 +30,7 @@ def string2gloves(sentence):
 	vecs = []
 	for token in doc:
 		vecs.append(word2glove(token.lower_))
-	return torch.tensor(torch.stack(vecs), requires_grad=False).to(device).float() # Have to stack so the tensors are not on the inside
+	return torch.tensor(torch.stack(vecs).to(device), requires_grad=False).float().to(device) # Have to stack so the tensors are not on the inside
 
 def num2word(num): 
 	''' Used for beam search '''
