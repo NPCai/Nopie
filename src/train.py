@@ -7,12 +7,13 @@ from torch import optim
 from model import *
 import torch.nn.functional as F
 import utils
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class EncoderDecoder():
 	def __init__(self):
 		super().__init__()
-		self.encoder = RNNEncoder() 
-		self.decoder = RNNDecoder()
+		self.encoder = RNNEncoder().to(device)
+		self.decoder = RNNDecoder().to(device)
 		self.lossFn = nn.L1Loss()
 		self.loss = 0
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
@@ -20,9 +21,6 @@ class EncoderDecoder():
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding): 
 		''' Train one iteration, no batch '''
-		self.encoder_optimizer.zero_grad() 
-		self.decoder_optimizer.zero_grad()
-
 		hidden = self.encoder(seqIn) # Encode sentence
 		# Decoder stuff
 		
@@ -31,14 +29,17 @@ class EncoderDecoder():
 			self.loss += self.lossFn(softmax.view(1,-1), utils.onehot(seqOutOneHot[i+1]).view(1,-1)) # Calculating loss
 	
 	def backprop(self):
+		print("doing backward")
 		self.loss.backward() # Compute grads with respect to the network
+		print("doing encoder step")
 		self.encoder_optimizer.step() # Update using the stored grad
+		print("doing decoder step")
 		self.decoder_optimizer.step()
+		self.encoder_optimizer.zero_grad() 
+		self.decoder_optimizer.zero_grad()
 		reportedLoss = self.loss.data[0]
-		self.loss = 0
+		loss.reset()
 		return reportedLoss
-		
-
 
 	'''def evaluation(self, seqIn):
 		# Encoder stuff

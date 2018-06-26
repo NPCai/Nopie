@@ -8,10 +8,13 @@ import utils
 import numpy as np
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# TODO(jacob): resolve tabs becoming unk tokens
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 torch.set_default_tensor_type(torch.FloatTensor)
+
 ed = EncoderDecoder()
-STARTembed = torch.zeros(100)
-ENDembed = torch.ones(100)
+STARTembed = torch.zeros(100).to(device)
+ENDembed = torch.ones(100).to(device)
 START = -2
 END = -1
 
@@ -19,7 +22,7 @@ data = dataLoader.pairs(devSet=True)
 for batch in range(100): 
 	loss = 0
 	minibatch = []
-	for i in np.random.randint(len(data), size=64):
+	for i in np.random.randint(len(data), size=20):
 		minibatch.append(data[i])
 	for pair in minibatch: # TODO(jacob), batches, randomization
 		print(pair)
