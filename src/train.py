@@ -16,7 +16,7 @@ class EncoderDecoder():
 		super().__init__()
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
-		self.lossFn = nn.NLLLoss()
+		self.lossFn = nn.CrossEntropyLoss()
 		self.loss = 0
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-2) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-2)
@@ -30,8 +30,10 @@ class EncoderDecoder():
 
 	def backprop(self):
 		print("doing backward")
-		self.loss = self.loss / 1
-		self.loss.backward() # Compute grads with respect to the network
+		self.loss = self.loss * 1000
+		self.loss.backward(retain_variables=True) # Compute grads with respect to the network
+		print("Encoder sum", list(self.encoder.parameters())[-1].grad)
+		print("Decoder sum", list(self.decoder.parameters())[-1].grad)
 		print("doing encoder step")
 		self.encoder_optimizer.step() # Update using the stored grad
 		print("doing decoder step")

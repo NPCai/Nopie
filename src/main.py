@@ -43,8 +43,8 @@ for batch in range(batchRange):
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 		ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
-
-	loss = ed.backprop()
+		print("Tuple prediciton:  ", ed.predict(seqIn))
+		loss = ed.backprop()
 
 	#if batch % 50 == 1:
 	#	print('Total time elapsed: %s (Estimated time remaining: %d %d%%)' % (timeSince(startTime, batch / batchRange),batch, batch / batchRange * 100))
