@@ -41,7 +41,8 @@ class EncoderDecoder():
 		self.decoder_optimizer.step()
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
-		reportedLoss = self.loss.data[0]
+		reportedLoss = self.loss.item()
+		self.loss = None
 		self.loss = 0
 		return reportedLoss
 
