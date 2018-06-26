@@ -36,9 +36,9 @@ for batch in range(100):
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 		ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
-	loss = ed.backprop()
+	loss, time = ed.backprop()
 
-	print("Total loss at epoch %d: %.2f" % (batch, loss))
+	print("Total loss at epoch %d: %.2f, took time %d" % (batch, loss, time))
 
 print("Saved", "\n")
 ed.save()

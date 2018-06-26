@@ -7,6 +7,8 @@ from torch import optim
 from model import *
 import torch.nn.functional as F
 import utils
+import time
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class EncoderDecoder():
@@ -32,6 +34,7 @@ class EncoderDecoder():
 			self.loss += self.lossFn(softmax.view(1,-1), torch.tensor([seqOutOneHot[i+1]]).to(device))
 
 	def backprop(self):
+		before = time.time()
 		print("doing backward")
 		self.loss = self.loss / 5
 		self.loss.backward() # Compute grads with respect to the network
@@ -42,9 +45,9 @@ class EncoderDecoder():
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
 		reportedLoss = self.loss.item()
-		self.loss = None
 		self.loss = 0
-		return reportedLoss
+		after = time.time()
+		return reportedLoss, (after - before)
 
 	'''def evaluation(self, seqIn):
 		# Encoder stuff
