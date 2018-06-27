@@ -17,34 +17,29 @@ class EncoderDecoder():
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
 		self.lossFn = nn.CrossEntropyLoss()
-		self.loss = 0
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
-		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
+		self.encoder_optimizer = optim.SGD(self.encoder.parameters(), lr=1) 												   
+		self.decoder_optimizer = optim.SGD(self.decoder.parameters(), lr=1)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding): 
 		''' Train one iteration, no batch '''
-		hidden = self.encoder(seqIn) # Encode sentence
-		for i in range(len(seqOutOneHot) - 1):
-			softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
-			self.loss += self.lossFn(softmax.view(1,-1), torch.tensor([seqOutOneHot[i+1]]).to(device))
-
-	def backprop(self):
-		before = time.time()
-		print("doing backward")
-		self.loss = self.loss * 1000
-		self.loss.backward(retain_variables=True) # Compute grads with respect to the network
-		print("Encoder sum", list(self.encoder.parameters())[-1].grad)
-		print("Decoder sum", list(self.decoder.parameters())[-1].grad)
-		print("doing encoder step")
-		self.encoder_optimizer.step() # Update using the stored grad
-		print("doing decoder step")
-		self.decoder_optimizer.step()
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
-		reportedLoss = self.loss.item()
-		self.loss = 0
-		after = time.time()
+		loss = 0
+		hidden = self.encoder(seqIn) # Encode sentence
 
+		for i in range(len(seqOutOneHot) - 1):
+			softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
+			loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
+
+		before = time.time()
+		a = list(self.encoder.parameters())[0].clone()
+		loss.backward() # Compute grads with respect to the network
+		self.encoder_optimizer.step() # Update using the stored grad
+		self.decoder_optimizer.step()
+		b = list(self.encoder.parameters())[0].clone()
+		reportedLoss = loss.item()
+		after = time.time()
+		print("Model has been updated by backprop:  ", not torch.equal(a.data, b.data))
 		return reportedLoss, (after - before)
 
 	def predict(self, seqIn):
