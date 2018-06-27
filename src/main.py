@@ -30,7 +30,7 @@ data = dataLoader.pairs(devSet=True)
 for batch in range(batchRange): 
 	loss = 0
 	minibatch = []
-	for i in np.random.randint(len(data), size=5):
+	for i in np.random.randint(len(data), size=1):
 		minibatch.append(data[i])
 	for pair in minibatch: # TODO(jacob), batches, randomization
 		seqIn = utils.string2gloves(pair['sentence'])
@@ -43,7 +43,7 @@ for batch in range(batchRange):
 		seqOutEmbedding.append(ENDembed)
 
 		loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
-		if batch % 1 == 0:
+		if batch % 10 == 0:
 			print("\n","Squadie tuple: ", tup,"")
 			print("Tuple prediciton:  ", ed.predict(seqIn))
 
