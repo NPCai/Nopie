@@ -33,7 +33,7 @@ class EncoderDecoder():
 
 		before = time.time()
 		a = list(self.encoder.parameters())[0].clone()
-		loss = loss / ((i + 7) / 2) # to not penalize long sequences,  + 7 over two rule
+		loss = loss / (i ** 0.75) # to not penalize long sequences,  + 7 over two rule
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
