@@ -43,7 +43,7 @@ for batch in range(batchRange):
 		seqOutEmbedding.append(ENDembed)
 
 		loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
-		if batch % 10 == 0:
+		if batch % 1 == 0:
 			print("\n","Squadie tuple: ", tup,"")
 			print("Tuple prediciton:  ", ed.predict(seqIn))
 
