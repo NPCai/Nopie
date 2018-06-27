@@ -21,12 +21,18 @@ class RNNDecoder(nn.Module):
 		return probs, new_hidden
 
 class RNNAttentionDecoder(nn.Module):
-	def __init__(self, hidden_size = 512, vocab_size = utils.getVocabSize(), dropout_p = 0.1):
+	def __init__(self, embedding_size = 100, hidden_size = 512, vocab_size = utils.getVocabSize(), dropout_p = 0.1):
 		super().__init__()
-		self.gru = nn.GRU(hidden_size, hidden_size)
-		self.attn = nn.Linear(hidden_size*2,)
-		self.attn_combine
-		self.dropout = nn.Dropout(self.dropout_p)
+		self.gru = nn.GRU(embedding_size, hidden_size)
+		self.attn = nn.Linear(hidden_size*2, vocab_size)
+		self.attn_combine = nn.Linear(hidden_size*2, hidden_size)
+		self.dropout = nn.Dropout(dropout_p)
+		self.output = nn.Linear(hidden_size, vocab_size)
 
 	def forward(self, word, hidden, seqOut):
-		pass
+		#attn_weights = F.softmax(self.attn(torch.cat(
+		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),seqOut.unsqueeze(0))
+		probs = F.log_softmax(self.linear(hidden_size).view(1,-1))
+		probs = F.relu(probs)
+		
+		return probs, new_hidden, attn_weights
