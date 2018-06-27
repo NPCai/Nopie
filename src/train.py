@@ -12,7 +12,7 @@ import random
 
 device = torch.device("cuda" if False else "cpu")
 teacher_forcing_ratio = 0.5
-seq_loss_penalty = 0.25 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
+seq_loss_penalty = 0.4 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
 start = torch.zeros(100).to(device)
 
 class EncoderDecoder():
@@ -44,7 +44,8 @@ class EncoderDecoder():
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
 
 		before = time.time()
-		loss = loss / ((len(seqOutOneHot) - 1) ** seq_loss_penalty) # to not penalize long sequences,  + 7 over two rule
+		loss = loss / ((len(seqOutOneHot) - 1) ** seq_loss_penalty) # length normalization
+
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
@@ -53,31 +54,37 @@ class EncoderDecoder():
 		print("Model has been updated by backprop:  ")
 		return reportedLoss, (after - before)
 
-	# TODO(jacob) beam search
-	'''def predict(self, seqIn):
+	def predict(self, seqIn):
 		with torch.no_grad():
+			
 			hidden = self.encoder(seqIn) # Forward propogation to hidden layer
-			sentence = []
-			glove = torch.zeros(100).to(device) # start token, all zeros
-			word = "START"
-			max_len, num_words = 40, 0 # failsafe
-			top3seqs = [(0, "")] # (prob, string)
-			while word != "END" and num_words < max_len:
-				for seq in top3seqs: # TODO(jacob) implement
-					if seq[1].endswith("END"): # sequence is done
+			top3seqs = [(hidden, start, "", 1.0)] # (hidden, last_token_glove, full_string, prob)
+
+			while True:
+				exit = True
+				for _, _, string, _ in top3seqs:
+					if (not string.endswith("END")) and len(string) < 40: # i.e. still a seq one in the mix
+						exit = False
+				if exit:
+					break
+				newTop3seqs = []
+				for hidden, glove, string, prob in top3seqs:
+					if string.endswith("END"):
+						newTop3seqs.append((hidden, glove, string, prob))
 						continue
 					softmax, hidden = self.decoder(glove, hidden)
-					word = utils.num2word(torch.argmax(softmax).item())
-					top3vals, top3probs = softmax.topk(3)
-					for val, prob in zip(top3vals, top3probs):
+					top3probs, top3vals = softmax.topk(3)
+					for probNew, valNew in zip(top3probs[0], top3vals[0]):
+						wordNew = utils.num2word(valNew.item())
+						gloveNew = utils.word2glove(wordNew)
+						newTop3seqs.append((hidden, gloveNew, string + " " + wordNew, probNew*prob))
+				
+				newTop3seqs.sort(key=lambda tup: tup[3], reverse=True)
+				top3seqs = newTop3seqs[0:3] # keep the top 3 of 9
 
+			return top3seqs[0][2] # just return the string
 
-					sentence.append(word)
-					glove = utils.word2glove(word)
-					num_words += 1
-			return sentence'''
-
-	def predict(self, seqIn):
+	'''def predict(self, seqIn):
 		with torch.no_grad():
 			hidden = self.encoder(seqIn) # Forward propogation to hidden layer
 			sentence = []
@@ -90,7 +97,7 @@ class EncoderDecoder():
 				sentence.append(word)
 				glove = utils.word2glove(word)
 				num_words += 1
-			return sentence
+			return sentence'''
 
 	def save(self): # Saving the trained network to a .ckpt file
 		torch.save(self.encoder.state_dict(), "RNNencoder.ckpt")

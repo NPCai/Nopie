@@ -20,7 +20,7 @@ class RNNDecoder(nn.Module):
 		probs = F.softmax(self.linear(new_hidden).view(1,-1)) # NOTE: softmax expects 2-dim input or else everything breaks
 		return probs, new_hidden
 
-class RNNAttentionDecoder(nn.Module):
+class RNNAttentionDecoder(nn.Module): # TODO: add coverage penalty to train after implementing
 	def __init__(self, hidden_size = 512, vocab_size = utils.getVocabSize(), dropout_p = 0.1):
 		super().__init__()
 		self.gru = nn.GRU(hidden_size, hidden_size)
