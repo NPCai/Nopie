@@ -12,7 +12,7 @@ from timey import *
 ed = EncoderDecoder()
 print("Training on dataset...","\n")
 
-device = torch.device("cuda" if False else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.set_default_tensor_type(torch.FloatTensor)
 
 STARTembed = torch.zeros(100).to(device)
