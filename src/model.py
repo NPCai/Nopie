@@ -28,3 +28,5 @@ class RNNAttentionDecoder(nn.Module):
 		self.dropout = nn.Dropout(self.dropout_p)
 
 	def forward(self, word, hidden, seqOut):
+
+		pass
