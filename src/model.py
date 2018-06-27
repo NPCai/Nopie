@@ -25,6 +25,9 @@ class RNNAttentionDecoder(nn.Module):
 		super().__init__()
 		self.gru = nn.GRU(hidden_size, hidden_size)
 		self.attn = nn.Linear(hidden_size*2,)
+		self.attn_combine
 		self.dropout = nn.Dropout(self.dropout_p)
 
 	def forward(self, word, hidden, seqOut):
+		pass
+
