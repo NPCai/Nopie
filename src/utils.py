@@ -19,7 +19,7 @@ wordToNum["UNK"] = 400000
 wordToNum["START"] = 400001
 wordToNum["END"] = 400002
 
-vecs[wordToNum["UNK"]] = vecs[word2num["unk"]]
+vecs[wordToNum["UNK"]] = vecs[wordToNum["unk"]]
 vecs[wordToNum["START"]] = torch.zeros(100).to(device)
 vecs[wordToNum["END"]] = torch.ones(100).to(device)
 
