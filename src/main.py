@@ -37,8 +37,8 @@ for batch in range(batchRange):
 		seqOutOneHot = [START]
 		seqOutEmbedding = [STARTembed]
 		for tup in pair['tuples']:
-			seqOutOneHot.extend(utils.sentence2nums(tup.replace("\t", ",")))
-			seqOutEmbedding.extend(utils.string2gloves(tup.replace("\t", ",")))
+			seqOutOneHot.extend(utils.sentence2nums(tup.replace("\t", " ")))
+			seqOutEmbedding.extend(utils.string2gloves(tup.replace("\t", " ")))
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 
