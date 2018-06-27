@@ -6,6 +6,8 @@ from train import *
 import dataLoader
 import utils
 import numpy as np
+import time
+from timey import *
 
 ed = EncoderDecoder()
 print("Training on dataset...","\n")
@@ -20,8 +22,12 @@ UNK = utils.word2num("UNK")
 START = utils.word2num("START")
 END = utils.word2num("END")
 
+#startTime = time.time()
+batchRange = 100000
+
 data = dataLoader.pairs(devSet=True)
-for batch in range(10000): 
+
+for batch in range(batchRange): 
 	loss = 0
 	minibatch = []
 	for i in np.random.randint(len(data), size=1):
@@ -36,11 +42,12 @@ for batch in range(10000):
 			seqOutEmbedding.extend(utils.string2gloves(tup))
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
+
 		loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
 		if batch % 10 == 0:
 			print("Tuple prediciton:  ", ed.predict(seqIn))
 
-	print("Total loss at epoch %d: %.2f, took time %d" % (batch, loss, time))
+	print("Total loss at epoch %d: %.2f, and took time %d" % (batch, loss, time))
 
 print("Saved", "\n")
 ed.save()
