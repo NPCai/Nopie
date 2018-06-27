@@ -34,7 +34,7 @@ def string2gloves(sentence):
 	for token in doc:
 		vecs.append(word2glove(token.lower_))
 	return torch.tensor(torch.stack(vecs), requires_grad=False).to(device).float() # Have to stack so the tensors are not on the inside
-
+	
 def num2word(num): 
 	''' Used for beam search '''
 	if num < 0 or num >= len(numToWord):
