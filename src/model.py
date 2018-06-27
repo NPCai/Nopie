@@ -30,4 +30,3 @@ class RNNAttentionDecoder(nn.Module):
 
 	def forward(self, word, hidden, seqOut):
 		pass
-

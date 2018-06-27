@@ -2,32 +2,29 @@ import pandas as pd
 import csv
 import torch
 import spacy
+import torchtext.vocab as vocab
 
 torch.set_default_tensor_type(torch.FloatTensor)
 nlp = spacy.load('en')
-device = torch.device("cuda" if False else "cpu")
-words = pd.read_table("../data/glove_100d.txt", sep=" ", index_col=0, header=None, quoting=csv.QUOTE_NONE)
-numToWord = {}
-wordToNum = {}
-
-for num, word in enumerate(words.index.values):
-	numToWord[num] = word
-	wordToNum[word] = num
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+glove = vocab.GloVe(name='6B', dim=100)
+numToWord = glove.itos
+wordToNum = glove.stoi
 	
-numToWord[num+1] = "UNK"
-numToWord[num+2] = "START"
-numToWord[num+3] = "END"
-wordToNum["UNK"] = num+1
-wordToNum["START"] = num+2
-wordToNum["END"] = num+3
+numToWord.append("UNK")
+numToWord.append("START")
+numToWord.append("END")
+wordToNum["UNK"] = 400000
+wordToNum["START"] = 400001
+wordToNum["END"] = 400002
 
 def word2glove(word):
 	''' Converts a string to a vector using GloVe, used for encoding input '''
 	v = None
 	try:
-		v = torch.tensor(words.loc[word].values, requires_grad=False).to(device).float() # Don't update embeddings
+		v = glove.vectors[glove.stoi[word]].to(device).float() # Don't update embeddings
 	except KeyError:
-		v = torch.zeros(100).float()
+		v = word2glove("unk")
 	return v.to(device)
 
 def string2gloves(sentence):
@@ -61,7 +58,7 @@ def sentence2nums(sentence):
 	return nums
 
 def getVocabSize():
-	return len(words) + 3 # for START, END, UNK
+	return len(numToWord) # for START, END, UNK
 
 def onehot(index):
 	if index == -1:
