@@ -10,7 +10,7 @@ import utils
 import time
 import random
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if False else "cpu")
 teacher_forcing_ratio = 0.5
 seq_loss_penalty = 0.25 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
 
@@ -43,15 +43,13 @@ class EncoderDecoder():
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
 
 		before = time.time()
-		a = list(self.encoder.parameters())[0].clone()
 		loss = loss / (i ** seq_loss_penalty) # to not penalize long sequences,  + 7 over two rule
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
-		b = list(self.encoder.parameters())[0].clone()
 		reportedLoss = loss.item()
 		after = time.time()
-		print("Model has been updated by backprop:  ", not torch.equal(a.data, b.data))
+		print("Model has been updated by backprop:  ")
 		return reportedLoss, (after - before)
 
 	def predict(self, seqIn):

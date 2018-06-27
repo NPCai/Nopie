@@ -12,7 +12,7 @@ from timey import *
 ed = EncoderDecoder()
 print("Training on dataset...","\n")
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if False else "cpu")
 torch.set_default_tensor_type(torch.FloatTensor)
 
 STARTembed = torch.zeros(100).to(device)
@@ -44,13 +44,11 @@ for batch in range(batchRange):
 
 		loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
 		if batch % 10 == 0:
+			print("","Squadie tuple: ", tup,"")
 			print("Tuple prediciton:  ", ed.predict(seqIn))
+
 
 	print("Total loss at epoch %d: %.2f, and took time %d" % (batch, loss, time))
 
 print("Saved", "\n")
 ed.save()
-
-# sentence = seq2vec(input())
-# finalOutput = rnn.evaluation(vectors)
-# print(data.vec2string(finalOutput))

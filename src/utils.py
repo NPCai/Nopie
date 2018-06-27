@@ -5,7 +5,7 @@ import spacy
 
 torch.set_default_tensor_type(torch.FloatTensor)
 nlp = spacy.load('en')
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if False else "cpu")
 words = pd.read_table("../data/glove_100d.txt", sep=" ", index_col=0, header=None, quoting=csv.QUOTE_NONE)
 numToWord = {}
 wordToNum = {}
@@ -32,7 +32,6 @@ def word2glove(word):
 
 def string2gloves(sentence):
 	''' Takes in a sentence string and produces a variable-length vectorization '''
-	# TODO(jacob) augment with spacy pos and dep data
 	doc = nlp(sentence) # segment the sentence
 	vecs = []
 	for token in doc:

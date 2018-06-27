@@ -3,7 +3,7 @@ import torch.nn.functional as F
 import utils
 
 class RNNEncoder(nn.Module):
-	def __init__(self, embedding_size=100, hidden_size=512): # TODO(jacob) use bigger word vectors/increase hidden size
+	def __init__(self, embedding_size=100, hidden_size=512):
 		super().__init__()
 		self.gru = nn.GRU(embedding_size, hidden_size)
 	def forward(self, sentence): # Takes all input at once, sentence is a tensor
@@ -19,3 +19,12 @@ class RNNDecoder(nn.Module):
 		new_hidden = self.gru(word.view(1, 1, -1), hidden)[1]
 		probs = F.softmax(self.linear(new_hidden).view(1,-1)) # NOTE: softmax expects 2-dim input or else everything breaks
 		return probs, new_hidden
+
+class RNNAttentionDecoder(nn.Module):
+	def __init__(self, hidden_size = 512, vocab_size = utils.getVocabSize(), dropout_p = 0.1):
+		super().__init__()
+		self.gru = nn.GRU(hidden_size, hidden_size)
+		self.attn = nn.Linear(hidden_size*2,)
+		self.dropout = nn.Dropout(self.dropout_p)
+
+	def forward(self, word, hidden, seqOut):
