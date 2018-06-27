@@ -22,8 +22,8 @@ class EncoderDecoder():
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
 		self.lossFn = nn.CrossEntropyLoss()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters()) 												   
-		self.decoder_optimizer = optim.Adam(self.decoder.parameters())
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=0.1) 												   
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=0.1)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding): 
 		''' Train one iteration, no batch '''
@@ -68,6 +68,7 @@ class EncoderDecoder():
 						exit = False
 				if exit:
 					break
+
 				newTop3seqs = []
 				for hidden, glove, string, prob in top3seqs:
 					if string.endswith("END"):
