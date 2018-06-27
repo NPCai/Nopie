@@ -8,8 +8,11 @@ from model import *
 import torch.nn.functional as F
 import utils
 import time
+import random
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+teacher_forcing_ratio = 0.5
+seq_loss_penalty = 0.25 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
 
 class EncoderDecoder():
 	def __init__(self):
@@ -27,13 +30,21 @@ class EncoderDecoder():
 		loss = 0
 		hidden = self.encoder(seqIn) # Encode sentence
 
-		for i in range(len(seqOutOneHot) - 1):
-			softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
-			loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
+		if random.random() < teacher_forcing_ratio:
+			for i in range(len(seqOutOneHot) - 1):
+				softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
+				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
+		else:
+			glove = torch.zeros(100).to(device)
+			for i in range(len(seqOutOneHot) - 1):
+				softmax, hidden = self.decoder(glove, hidden)
+				word = utils.num2word(torch.argmax(softmax).item())
+				glove = utils.word2glove(word)
+				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
 
 		before = time.time()
 		a = list(self.encoder.parameters())[0].clone()
-		loss = loss / (i ** 0.5) # to not penalize long sequences,  + 7 over two rule
+		loss = loss / (i ** seq_loss_penalty) # to not penalize long sequences,  + 7 over two rule
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
