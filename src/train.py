@@ -33,6 +33,7 @@ class EncoderDecoder():
 
 		before = time.time()
 		a = list(self.encoder.parameters())[0].clone()
+		loss = loss / i # to not penalize long sequences
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
