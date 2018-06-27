@@ -33,13 +33,12 @@ for batch in range(batchRange):
 	for i in np.random.randint(len(data), size=1):
 		minibatch.append(data[i])
 	for pair in minibatch: # TODO(jacob), batches, randomization
-		print(pair)
-		seqIn = utils.string2gloves(pair['sentence'].replace("\t", ","))
+		seqIn = utils.string2gloves(pair['sentence'])
 		seqOutOneHot = [START]
 		seqOutEmbedding = [STARTembed]
 		for tup in pair['tuples']:
-			seqOutOneHot.extend(utils.sentence2nums(tup))
-			seqOutEmbedding.extend(utils.string2gloves(tup))
+			seqOutOneHot.extend(utils.sentence2nums(tup.replace("\t", ",")))
+			seqOutEmbedding.extend(utils.string2gloves(tup.replace("\t", ",")))
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 
