@@ -34,7 +34,7 @@ for batch in range(batchRange):
 		minibatch.append(data[i])
 	for pair in minibatch: # TODO(jacob), batches, randomization
 		print(pair)
-		seqIn = utils.string2gloves(pair['sentence'])
+		seqIn = utils.string2gloves(pair['sentence'].replace("\t", ","))
 		seqOutOneHot = [START]
 		seqOutEmbedding = [STARTembed]
 		for tup in pair['tuples']:
