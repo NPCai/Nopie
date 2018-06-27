@@ -22,7 +22,7 @@ def word2glove(word):
 	''' Converts a string to a vector using GloVe, used for encoding input '''
 	v = None
 	try:
-		v = glove.vectors[glove.wordToNum[word]].to(device).float() # Don't update embeddings
+		v = glove.vectors[wordToNum[word]].to(device).float() # Don't update embeddings
 	except KeyError:
 		v = word2glove("unk")
 	return v.to(device)
