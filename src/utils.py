@@ -27,7 +27,7 @@ def word2glove(word):
 		return torch.zeros(100)
 	v = None
 	try:
-		v = glove.vector[wordToNum[word.lower()]].to(device).float() # Don't update embeddings
+		v = glove.vectors[wordToNum[word.lower()]].to(device).float() # Don't update embeddings
 	except KeyError:
 		v = word2glove("unk")
 	return v.to(device)
