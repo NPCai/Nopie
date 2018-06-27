@@ -10,7 +10,7 @@ import utils
 import time
 import random
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if False else "cpu")
 teacher_forcing_ratio = 0.5
 seq_loss_penalty = 0.25 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
 start = torch.zeros(100).to(device)
@@ -50,6 +50,7 @@ class EncoderDecoder():
 		self.decoder_optimizer.step()
 		reportedLoss = loss.item()
 		after = time.time()
+		print("Model has been updated by backprop:  ")
 		return reportedLoss, (after - before)
 
 	# TODO(jacob) beam search

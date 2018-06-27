@@ -29,7 +29,6 @@ def word2glove(word):
 
 def string2gloves(sentence):
 	''' Takes in a sentence string and produces a variable-length vectorization '''
-	# TODO(jacob) augment with spacy pos and dep data
 	doc = nlp(sentence) # segment the sentence
 	vecs = []
 	for token in doc:
