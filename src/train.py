@@ -9,6 +9,7 @@ import torch.nn.functional as F
 import utils
 import time
 import random
+torch.set_default_tensor_type(torch.cuda.FloatTensor)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 teacher_forcing_ratio = 0.5
