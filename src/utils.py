@@ -10,7 +10,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 glove = vocab.GloVe(name='6B', dim=100)
 numToWord = glove.itos
 wordToNum = glove.stoi
-vecs = glove.vectors
 
 numToWord.append("UNK")
 numToWord.append("START")
@@ -19,15 +18,16 @@ wordToNum["UNK"] = 400000
 wordToNum["START"] = 400001
 wordToNum["END"] = 400002
 
-vecs[wordToNum["UNK"]] = vecs[wordToNum["unk"]]
-vecs[wordToNum["START"]] = torch.zeros(100).to(device)
-vecs[wordToNum["END"]] = torch.ones(100).to(device)
 
 def word2glove(word):
 	''' Converts a string to a vector using GloVe, used for encoding input '''
+	if word == "END":
+		return torch.ones(100)
+	if word == "START":
+		return torch.zeros(100)
 	v = None
 	try:
-		v = vecs[wordToNum[word]].to(device).float() # Don't update embeddings
+		v = glove.vector[wordToNum[word.lower()]].to(device).float() # Don't update embeddings
 	except KeyError:
 		v = word2glove("unk")
 	return v.to(device)
