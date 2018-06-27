@@ -13,6 +13,7 @@ import random
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 teacher_forcing_ratio = 0.5
 seq_loss_penalty = 0.25 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
+start = torch.zeros(100).to(device)
 
 class EncoderDecoder():
 	def __init__(self):
@@ -35,7 +36,7 @@ class EncoderDecoder():
 				softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
 		else:
-			glove = torch.zeros(100).to(device)
+			glove = start
 			for i in range(len(seqOutOneHot) - 1):
 				softmax, hidden = self.decoder(glove, hidden)
 				word = utils.num2word(torch.argmax(softmax).item())
@@ -43,16 +44,37 @@ class EncoderDecoder():
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
 
 		before = time.time()
-		a = list(self.encoder.parameters())[0].clone()
-		loss = loss / (i ** seq_loss_penalty) # to not penalize long sequences,  + 7 over two rule
+		loss = loss / ((len(seqOutOneHot) - 1) ** seq_loss_penalty) # to not penalize long sequences,  + 7 over two rule
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
-		b = list(self.encoder.parameters())[0].clone()
 		reportedLoss = loss.item()
 		after = time.time()
-		print("Model has been updated by backprop:  ", not torch.equal(a.data, b.data))
 		return reportedLoss, (after - before)
+
+	# TODO(jacob) beam search
+	'''def predict(self, seqIn):
+		with torch.no_grad():
+			hidden = self.encoder(seqIn) # Forward propogation to hidden layer
+			sentence = []
+			glove = torch.zeros(100).to(device) # start token, all zeros
+			word = "START"
+			max_len, num_words = 40, 0 # failsafe
+			top3seqs = [(0, "")] # (prob, string)
+			while word != "END" and num_words < max_len:
+				for seq in top3seqs: # TODO(jacob) implement
+					if seq[1].endswith("END"): # sequence is done
+						continue
+					softmax, hidden = self.decoder(glove, hidden)
+					word = utils.num2word(torch.argmax(softmax).item())
+					top3vals, top3probs = softmax.topk(3)
+					for val, prob in zip(top3vals, top3probs):
+
+
+					sentence.append(word)
+					glove = utils.word2glove(word)
+					num_words += 1
+			return sentence'''
 
 	def predict(self, seqIn):
 		with torch.no_grad():
