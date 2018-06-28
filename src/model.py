@@ -8,7 +8,7 @@ class RNNEncoder(nn.Module):
 		self.gru = nn.GRU(embedding_size, hidden_size)
 	def forward(self, sentence): # Takes all input at once, sentence is a tensor
 		# (seq_len, batch len, input_size), [1] is the hidden state
-		return self.gru(sentence.view(len(sentence), 1, -1))[1] 
+		return self.gru(sentence.view(len(sentence), 1, -1))
 
 class RNNDecoder(nn.Module):
 	def __init__(self, embedding_size=100, hidden_size=512, vocab_size = utils.getVocabSize()):
@@ -29,10 +29,10 @@ class RNNAttentionDecoder(nn.Module): # TODO(jacob) add coverege penalty after i
 		self.dropout = nn.Dropout(dropout_p)
 		self.output = nn.Linear(hidden_size, vocab_size)
 
-	def forward(self, word, hidden, seqOut):
-		#attn_weights = F.softmax(self.attn(torch.cat(
-		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),seqOut.unsqueeze(0))
+	def forward(self, word, hidden, encoder_output):
+		attn_weights = F.softmax(self.attn(torch.cat((word[0],hidden[0]),1)), dim = 1)
+		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),encoder_output.unsqueeze(0))
 		probs = F.log_softmax(self.linear(hidden_size).view(1,-1))
-		probs = F.relu(probs)
+		probs = F.relu(probs) # Activation function
 		
 		return probs, new_hidden, attn_weights
