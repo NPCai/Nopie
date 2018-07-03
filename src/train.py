@@ -9,9 +9,15 @@ import torch.nn.functional as F
 import utils
 import time
 import random
-torch.set_default_tensor_type(torch.cuda.FloatTensor)
+from torch.distributions import Categorical
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+if torch.cuda.is_available():
+	torch.set_default_tensor_type(torch.cuda.FloatTensor)
+	device = torch.device("cuda")
+else:
+	torch.set_default_tensor_type(torch.FloatTensor)
+	device = torch.device("cpu")
+
 teacher_forcing_ratio = 0.5
 seq_loss_penalty = 0.4 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
 start = torch.zeros(100).to(device)
@@ -46,6 +52,29 @@ class EncoderDecoder():
 
 		before = time.time()
 		loss = loss / ((len(seqOutOneHot) - 1) ** seq_loss_penalty) # length normalization
+
+		loss.backward() # Compute grads with respect to the network
+		self.encoder_optimizer.step() # Update using the stored grad
+		self.decoder_optimizer.step()
+		reportedLoss = loss.item()
+		after = time.time()
+		print("Model has been updated by backprop:  ")
+		return reportedLoss, (after - before)
+
+	def rltrain(self, seqIn, seqOutOneHot, seqOutEmbedding):
+		''' Train one iteration, no batch '''
+		self.encoder_optimizer.zero_grad() 
+		self.decoder_optimizer.zero_grad()
+		loss = 0
+		hidden = self.encoder(seqIn) # Encode sentence
+		# Have to do differentiable decoding in order to do RL
+		'''for i in range(len(seqOutOneHot) - 1):
+			softmax, hidden = self.decoder(glove, hidden, 1.0)
+			m = Categorical(softmax)
+			action = m.sample()
+			next_state, reward = 
+			loss = -m.log_prob(action) * reward
+			loss.backward()'''
 
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad

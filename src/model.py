@@ -19,6 +19,10 @@ class RNNDecoder(nn.Module):
 		new_hidden = self.gru(word.view(1, 1, -1), hidden)[1]
 		probs = F.softmax(self.linear(new_hidden).view(1,-1)) # NOTE: softmax expects 2-dim input or else everything breaks
 		return probs, new_hidden
+	def tempSoftmax(self, vector, temperature):
+		exp = torch.div(vector, temperature).exponential_()
+		denom = exp.sum()
+		return torch.div(exp, denom)
 
 class RNNAttentionDecoder(nn.Module): # TODO(jacob) add coverege penalty after implementing this (in train)
 	def __init__(self, embedding_size = 100, hidden_size = 512, vocab_size = utils.getVocabSize(), dropout_p = 0.1):
