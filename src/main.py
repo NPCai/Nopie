@@ -18,6 +18,7 @@ else:
 
 ed = EncoderDecoder()
 print("Training on dataset...","\n")
+
 STARTembed = torch.zeros(100).to(device)
 ENDembed = torch.ones(100).to(device)
 

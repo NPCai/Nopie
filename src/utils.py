@@ -10,6 +10,7 @@ if torch.cuda.is_available():
 else:
 	torch.set_default_tensor_type(torch.FloatTensor)
 	device = torch.device("cpu")
+
 nlp = spacy.load('en')
 glove = vocab.GloVe(name='6B', dim=100)
 numToWord = glove.itos
