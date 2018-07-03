@@ -4,9 +4,13 @@ import torch
 import spacy
 import torchtext.vocab as vocab
 
-torch.set_default_tensor_type(torch.cuda.FloatTensor)
+if torch.cuda.is_available():
+	torch.set_default_tensor_type(torch.cuda.FloatTensor)
+	device = torch.device("cuda")
+else:
+	torch.set_default_tensor_type(torch.FloatTensor)
+	device = torch.device("cpu")
 nlp = spacy.load('en')
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 glove = vocab.GloVe(name='6B', dim=100)
 numToWord = glove.itos
 wordToNum = glove.stoi

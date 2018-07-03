@@ -9,9 +9,14 @@ import torch.nn.functional as F
 import utils
 import time
 import random
-torch.set_default_tensor_type(torch.cuda.FloatTensor)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+if torch.cuda.is_available():
+	torch.set_default_tensor_type(torch.cuda.FloatTensor)
+	device = torch.device("cuda")
+else:
+	torch.set_default_tensor_type(torch.FloatTensor)
+	device = torch.device("cpu")
+	
 teacher_forcing_ratio = 0.5
 seq_loss_penalty = 0.4 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
 start = torch.zeros(100).to(device)
