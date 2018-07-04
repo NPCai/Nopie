@@ -82,6 +82,8 @@ class EncoderDecoder():
 
 		tup_str = ''.join(i.lower() + ' ' for i in tup)
 		total_reward = self.critic.forward(sentence, tup_str)
+		seq_prob = torch.stack(log_probs).sum()
+		print("SEQUENCE PROBABILITY:  ", seq_prob)
 		loss = (seq_prob / seq_prob ) * total_reward * (-10)
 		before = time.time()
 		loss.backward() # Compute grads with respect to the network
