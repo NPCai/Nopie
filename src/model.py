@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import utils
@@ -24,15 +25,20 @@ class RNNAttentionDecoder(nn.Module):
 	def __init__(self, embedding_size = 100, hidden_size = 512, vocab_size = utils.getVocabSize(), dropout_p = 0.1):
 		super().__init__()
 		self.gru = nn.GRU(embedding_size, hidden_size)
+		self.embedding = nn.Embedding(self.output_size, self.hidden_size)
 		self.attn = nn.Linear(hidden_size*2, vocab_size)
 		self.attn_combine = nn.Linear(hidden_size*2, hidden_size)
 		self.dropout = nn.Dropout(dropout_p)
 		self.output = nn.Linear(hidden_size, vocab_size)
 
 	def forward(self, word, hidden, encoder_output):
-		attn_weights = F.softmax(self.attn(torch.cat((word[0],hidden[0]),1)), dim = 1)
+		wordEmbed = self.dropout(self.embedding(word).view(1,1,-1))
+		attn_weights = F.softmax(self.attn(torch.cat((wordEmbed[0],hidden[0]),1)), dim = 1)
 		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),encoder_output.unsqueeze(0))
-		probs = F.log_softmax(self.linear(hidden_size).view(1,-1))
+		probs = torch.cat((wordEmbed[0],attn_toNetwork[0]),1)
+		probs = self.attn_combine(probs).unsqueeze(0)
 		probs = F.relu(probs) # Activation function
+		probs, new_hidden = self.gru(probs, new_hidden)
+		probs = F.log_softmax(self.linear(hidden_size).view(1,-1))
 		
 		return probs, new_hidden, attn_weights

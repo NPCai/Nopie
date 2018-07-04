@@ -11,9 +11,9 @@ import time
 import random
 
 if torch.cuda.is_available():
-	torch.set_default_tensor_type(torch.cuda.FloatTensor)
+	'''	torch.set_default_tensor_type(torch.cuda.FloatTensor)
 	device = torch.device("cuda")
-else:
+else:'''
 	torch.set_default_tensor_type(torch.FloatTensor)
 	device = torch.device("cpu")
 	
@@ -26,6 +26,7 @@ class EncoderDecoder():
 		super().__init__()
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
+		self.attndecoder = RNNAttentionDecoder().to(device)
 		self.lossFn = nn.CrossEntropyLoss()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-2) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-2)
@@ -38,13 +39,14 @@ class EncoderDecoder():
 		hidden = self.encoder(seqIn) # Encode sentence
 
 		if random.random() < teacher_forcing_ratio:
+			glovey = start
 			for i in range(len(seqOutOneHot) - 1):
-				softmax, hidden = self.decoder(seqOutEmbedding[i], hidden)
+				softmax, hidden, _ = self.attndecoder(seqOutEmbedding[i], hidden, seqOutOneHot)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
 		else:
 			glove = start
 			for i in range(len(seqOutOneHot) - 1):
-				softmax, hidden = self.decoder(glove, hidden)
+				softmax, hidden, _ = self.attndecoder(glove, hidden, seqOutOneHot)
 				word = utils.num2word(torch.argmax(softmax).item())
 				glove = utils.word2glove(word)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
