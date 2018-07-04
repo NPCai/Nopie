@@ -7,6 +7,7 @@ import dataLoader
 import utils
 import numpy as np
 import time
+import random
 from timey import *
 
 if torch.cuda.is_available():
@@ -18,6 +19,7 @@ else:'''
 
 ed = EncoderDecoder()
 print("Training on dataset...","\n")
+
 STARTembed = torch.zeros(100).to(device)
 ENDembed = torch.ones(100).to(device)
 
@@ -45,7 +47,10 @@ for batch in range(batchRange):
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 
-		loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
+		if random.randint(0, 4) == 1:
+			loss, time = ed.rltrain(seqIn, seqOutOneHot, seqOutEmbedding, pair['sentence'])
+		else:
+			loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
 		if batch % 10 == 0:
 			print("\n","Squadie tuple: ", tup,"")
 			print("Tuple prediciton:  ", ed.predict(seqIn))

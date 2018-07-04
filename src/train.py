@@ -9,6 +9,8 @@ import torch.nn.functional as F
 import utils
 import time
 import random
+import customLoss
+from torch.distributions import Categorical
 
 if torch.cuda.is_available():
 	'''	torch.set_default_tensor_type(torch.cuda.FloatTensor)
@@ -16,8 +18,8 @@ if torch.cuda.is_available():
 else:'''
 	torch.set_default_tensor_type(torch.FloatTensor)
 	device = torch.device("cpu")
-	
-teacher_forcing_ratio = 0.5
+
+teacher_forcing_ratio = 0.9
 seq_loss_penalty = 0.4 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
 start = torch.zeros(100).to(device)
 
@@ -28,8 +30,9 @@ class EncoderDecoder():
 		self.decoder = RNNDecoder().to(device)
 		self.attndecoder = RNNAttentionDecoder().to(device)
 		self.lossFn = nn.CrossEntropyLoss()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-2) 												   
-		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-2)
+		self.critic = customLoss.TupleCritic()
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-5) 												   
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-5)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding): 
 		''' Train one iteration, no batch '''
@@ -62,7 +65,39 @@ class EncoderDecoder():
 		print("Model has been updated by backprop:  ")
 		return reportedLoss, (after - before)
 
+	def rltrain(self, seqIn, seqOutOneHot, seqOutEmbedding, sentence):
+		''' Train one iteration, no batch '''
+		self.encoder_optimizer.zero_grad() 
+		self.decoder_optimizer.zero_grad()
+		loss = 0
+		hidden = self.encoder(seqIn) # Encode sentence
+		glove = start
+		tup = []
+		log_probs = []
+		for i in range(len(seqOutOneHot) - 1):
+			softmax, hidden = self.decoder(glove, hidden, 1.0) # lowish softmax temperature
+			m = Categorical(softmax)
+			wordPos = m.sample()
+			glove = utils.word2glove(utils.num2word(wordPos))
+			log_probs.append(m.log_prob(wordPos))
+			tup.append(utils.num2word(wordPos))
+
+		tup_str = ''.join(i.lower() + ' ' for i in tup)
+		total_reward = self.critic.forward(sentence, tup_str)
+		seq_prob = torch.stack(log_probs).sum()
+		print("SEQUENCE PROBABILITY:  ", seq_prob)
+		loss = (seq_prob / seq_prob ) * total_reward * (-10)
+		before = time.time()
+		loss.backward() # Compute grads with respect to the network
+		self.encoder_optimizer.step() # Update using the stored grad
+		self.decoder_optimizer.step()
+		reportedLoss = loss.item()
+		after = time.time()
+		print("Model has been updated by backprop:  ")
+		return loss.item(), (after - before)
+
 	def predict(self, seqIn):
+		''' Beam Search Implementation '''
 		with torch.no_grad():
 			
 			hidden = self.encoder(seqIn) # Forward propogation to hidden layer
