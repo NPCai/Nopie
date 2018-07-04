@@ -82,8 +82,8 @@ class EncoderDecoder():
 
 		tup_str = ''.join(i.lower() + ' ' for i in tup)
 		total_reward = self.critic.forward(sentence, tup_str)
-		print("log probs", torch.stack(log_probs).sum())
-		seq_prob = torch.stack(log_probs).sum() * -1
+		print("RL STEP", torch.stack(log_probs).sum())
+		seq_prob = torch.stack(log_probs).sum() / 10
 		loss = seq_prob * total_reward
 		before = time.time()
 		loss.backward() # Compute grads with respect to the network
