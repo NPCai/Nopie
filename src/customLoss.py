@@ -14,11 +14,11 @@ class TupleCritic():
 		if model[0] == "<":
 			reward += 1
 		else:
-			reward -= 1
+			reward -= 5
 		if model[-1] == ">":
 			reward += 1
 		else:
-			reward -= 1
+			reward -= 5
 		groups = re.search(r'<([^>]+)>', model)
 		commas = 0
 		if groups != None:
@@ -41,5 +41,5 @@ class TupleCritic():
 					if i.lower() in self.nouns:
 						reward += 1
 			else:
-				reward -= 2
+				reward -= 4
 		return reward
