@@ -93,7 +93,7 @@ class EncoderDecoder():
 		reportedLoss = loss.item()
 		after = time.time()
 		print("Model has been updated by backprop:  ")
-		return reportedLoss, (after - before)
+		return total_reward, (after - before)
 
 	def predict(self, seqIn):
 		''' Beam Search Implementation '''
