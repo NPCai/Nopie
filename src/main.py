@@ -47,7 +47,7 @@ for batch in range(batchRange):
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 
-		if random.randint(0, 3) == 1:
+		if random.randint(0, 4) == 1:
 			loss, time = ed.rltrain(seqIn, seqOutOneHot, seqOutEmbedding, pair['sentence'])
 		else:
 			loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)

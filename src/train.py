@@ -19,7 +19,7 @@ else:
 	torch.set_default_tensor_type(torch.FloatTensor)
 	device = torch.device("cpu")
 
-teacher_forcing_ratio = 0.5
+teacher_forcing_ratio = 0.9
 seq_loss_penalty = 0.4 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
 start = torch.zeros(100).to(device)
 
@@ -30,8 +30,8 @@ class EncoderDecoder():
 		self.decoder = RNNDecoder().to(device)
 		self.lossFn = nn.CrossEntropyLoss()
 		self.critic = customLoss.TupleCritic()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-2) 												   
-		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-2)
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-3) 												   
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-3)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding): 
 		''' Train one iteration, no batch '''
