@@ -81,11 +81,10 @@ class EncoderDecoder():
 			tup.append(utils.num2word(wordPos))
 
 		tup_str = ''.join(i.lower() + ' ' for i in tup)
-		print(tup_str)
 		total_reward = self.critic.forward(sentence, tup_str)
+		print("log probs", torch.stack(log_probs).sum())
 		seq_prob = torch.stack(log_probs).sum() * -1
 		loss = seq_prob * total_reward
-
 		before = time.time()
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
@@ -93,7 +92,7 @@ class EncoderDecoder():
 		reportedLoss = loss.item()
 		after = time.time()
 		print("Model has been updated by backprop:  ")
-		return total_reward, (after - before)
+		return loss.item(), (after - before)
 
 	def predict(self, seqIn):
 		''' Beam Search Implementation '''
