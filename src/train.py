@@ -9,6 +9,7 @@ import torch.nn.functional as F
 import utils
 import time
 import random
+import customLoss
 from torch.distributions import Categorical
 
 if torch.cuda.is_available():
@@ -28,6 +29,7 @@ class EncoderDecoder():
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
 		self.lossFn = nn.CrossEntropyLoss()
+		self.critic = customLoss.TupleCritic()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-2) 												   
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-2)
 
@@ -61,23 +63,29 @@ class EncoderDecoder():
 		print("Model has been updated by backprop:  ")
 		return reportedLoss, (after - before)
 
-	def rltrain(self, seqIn, seqOutOneHot, seqOutEmbedding):
+	def rltrain(self, seqIn, seqOutOneHot, seqOutEmbedding, sentence):
 		''' Train one iteration, no batch '''
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
 		loss = 0
 		hidden = self.encoder(seqIn) # Encode sentence
-		
-		sentence = []
+		glove = start
+		tup = []
 		log_probs = []
 		for i in range(len(seqOutOneHot) - 1):
-			softmax, hidden = self.decoder(glove, hidden, 0.1) # lowish temperature
+			softmax, hidden = self.decoder(glove, hidden, 1.0) # lowish softmax temperature
 			m = Categorical(softmax)
 			wordPos = m.sample()
-			next_state, reward = 
-			loss = -m.log_prob(action) * reward
+			glove = utils.word2glove(utils.num2word(wordPos))
+			log_probs.append(m.log_prob(wordPos))
+			tup.append(utils.num2word(wordPos))
 
+		tup_str = ''.join(i.lower() + ' ' for i in tup)
+		total_reward = self.critic.forward(sentence, tup_str)
+		seq_prob = torch.stack(log_probs).sum() * -1
+		loss = seq_prob * total_reward
 
+		before = time.time()
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()

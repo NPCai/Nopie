@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import utils
+import torch
 
 class RNNEncoder(nn.Module):
 	def __init__(self, embedding_size=100, hidden_size=512):

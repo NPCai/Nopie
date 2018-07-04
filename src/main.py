@@ -46,7 +46,7 @@ for batch in range(batchRange):
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 
-		loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
+		loss, time = ed.rltrain(seqIn, seqOutOneHot, seqOutEmbedding, pair['sentence'])
 		if batch % 10 == 0:
 			print("\n","Squadie tuple: ", tup,"")
 			print("Tuple prediciton:  ", ed.predict(seqIn))
