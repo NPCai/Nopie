@@ -9,7 +9,7 @@ class RNNEncoder(nn.Module):
 		self.gru = nn.GRU(embedding_size, hidden_size)
 	def forward(self, sentence): # Takes all input at once, sentence is a tensor
 		# (seq_len, batch len, input_size), [1] is the hidden state
-		return self.gru(sentence.view(len(sentence), 1, -1))[1]
+		return self.gru(sentence.view(len(sentence), 1, -1))
 
 class RNNDecoder(nn.Module):
 	def __init__(self, embedding_size=100, hidden_size=512, vocab_size = utils.getVocabSize()):
@@ -24,17 +24,25 @@ class RNNDecoder(nn.Module):
 class RNNAttentionDecoder(nn.Module):
 	def __init__(self, embedding_size = 100, hidden_size = 512, vocab_size = utils.getVocabSize(), dropout_p = 0.1):
 		super().__init__()
-		self.gru = nn.GRU(embedding_size, hidden_size)
-		self.embedding = nn.Embedding(self.output_size, self.hidden_size)
-		self.attn = nn.Linear(hidden_size*2, vocab_size)
-		self.attn_combine = nn.Linear(hidden_size*2, hidden_size)
+		self.hidden_size = hidden_size
+		self.vocab_size = vocab_size
+
+		self.gru = nn.GRU(hidden_size, hidden_size)
+		self.attn = nn.Linear(hidden_size + embedding_size, vocab_size)
+		self.attn_combine = nn.Linear(hidden_size + embedding_size, hidden_size)
 		self.dropout = nn.Dropout(dropout_p)
 		self.output = nn.Linear(hidden_size, vocab_size)
 
 	def forward(self, word, hidden, encoder_output):
-		wordEmbed = self.dropout(self.embedding(word).view(1,1,-1))
-		attn_weights = F.softmax(self.attn(torch.cat((wordEmbed[0],hidden[0]),1)), dim = 1)
-		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),encoder_output.unsqueeze(0))
+		wordEmbed = self.dropout(word.view(1,1,-1))
+		attn_weights_temp = torch.cat((wordEmbed[0],hidden[0]),1)
+		attn_weights = F.softmax(self.attn(attn_weights_temp), dim = 1)
+		print(attn_weights,"\n")
+		print("peepee 2 okay")
+		print(encoder_output[0], "\n")
+		attn_weights = torch.t(attn_weights)
+		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),encoder_output[0].unsqueeze(0))
+		print("attn_toNetwork a okay")
 		probs = torch.cat((wordEmbed[0],attn_toNetwork[0]),1)
 		probs = self.attn_combine(probs).unsqueeze(0)
 		probs = F.relu(probs) # Activation function

@@ -36,17 +36,17 @@ class EncoderDecoder():
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
 		loss = 0
-		hidden = self.encoder(seqIn) # Encode sentence
+		encoder_output, hidden = self.encoder(seqIn) # Encode sentence
 
 		if random.random() < teacher_forcing_ratio:
 			glovey = start
 			for i in range(len(seqOutOneHot) - 1):
-				softmax, hidden, _ = self.attndecoder(seqOutEmbedding[i], hidden, seqOutOneHot)
+				softmax, hidden, _ = self.attndecoder(seqOutEmbedding[i], hidden, encoder_output)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
 		else:
 			glove = start
 			for i in range(len(seqOutOneHot) - 1):
-				softmax, hidden, _ = self.attndecoder(glove, hidden, seqOutOneHot)
+				softmax, hidden, _ = self.attndecoder(glove, hidden, encoder_output)
 				word = utils.num2word(torch.argmax(softmax).item())
 				glove = utils.word2glove(word)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
