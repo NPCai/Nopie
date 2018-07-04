@@ -67,14 +67,16 @@ class EncoderDecoder():
 		self.decoder_optimizer.zero_grad()
 		loss = 0
 		hidden = self.encoder(seqIn) # Encode sentence
-		# Have to do differentiable decoding in order to do RL
-		'''for i in range(len(seqOutOneHot) - 1):
-			softmax, hidden = self.decoder(glove, hidden, 1.0)
+		
+		sentence = []
+		log_probs = []
+		for i in range(len(seqOutOneHot) - 1):
+			softmax, hidden = self.decoder(glove, hidden, 0.1) # lowish temperature
 			m = Categorical(softmax)
-			action = m.sample()
+			wordPos = m.sample()
 			next_state, reward = 
 			loss = -m.log_prob(action) * reward
-			loss.backward()'''
+
 
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
@@ -85,6 +87,7 @@ class EncoderDecoder():
 		return reportedLoss, (after - before)
 
 	def predict(self, seqIn):
+		''' Beam Search Implementation '''
 		with torch.no_grad():
 			
 			hidden = self.encoder(seqIn) # Forward propogation to hidden layer
