@@ -7,6 +7,7 @@ import dataLoader
 import utils
 import numpy as np
 import time
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 import random
 from timey import *
 
@@ -35,8 +36,11 @@ data = dataLoader.pairs(devSet=True)
 for batch in range(batchRange): 
 	loss = 0
 	minibatch = []
-	for i in np.random.randint(len(data), size=1):
+	for i in np.random.randint(len(data), size=10):
 		minibatch.append(data[i])
+	batchSeqIn = []
+	batchSeqOutOneHot = []
+	batchSeqOutEmbedding = []
 	for pair in minibatch: # TODO(jacob), batches, randomization
 		seqIn = utils.string2gloves(pair['sentence'])
 		seqOutOneHot = [START]
@@ -45,8 +49,22 @@ for batch in range(batchRange):
 		seqOutEmbedding.extend(utils.string2gloves(pair['sentence'].replace("\t", ",")))
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
+		batchSeqIn.append(seqIn)
+		batchSeqOutEmbedding.append(seqOutEmbedding)
+		batchSeqOutOneHot.append(seqOutOneHot)
 
-		loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
+		seq_lengths = torch.LongTensor(list(map(len, seqIn))).to(device)
+
+		seq_tensor = torch.zeros((len(seqIn), seq_lengths.max())).long().to(device)
+		for idx, (seq, seqlen) in enumerate(zip(batchSeqIn, seq_lengths)):
+			seq_tensor[idx, :seqlen] = torch.FloatTensor(seq)
+
+		seq_lengths, perm_idx = seq_lengths.sort(0, descending=True)
+		seqIn = seqIn[perm_idx]
+		seqIn = seqIn.transpose(0,1) # (B,L,D) -> (L,B,D)
+		seqIn = pack_padded_sequence(seqIn, seq_lengths.cpu().numpy())
+
+		loss, time = ed.train(seqIn, torch.stack(seqOutOneHot), torch.stack(seqOutEmbedding))
 		if batch % 10 == 0:
 			print("\n","Squadie tuple: ", pair['sentence'],"")
 			print("Tuple prediciton:  ", ed.predict(seqIn))

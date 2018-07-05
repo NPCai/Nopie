@@ -61,7 +61,11 @@ class EncoderDecoder():
 		self.decoder_optimizer.step()
 		reportedLoss = loss.item()
 		after = time.time()
-		print("Model has been updated by backprop:  ")
+
+		for p,n in zip(encoder.parameters(),encoder._all_weights[0]):
+			if n[:6] == 'weight':
+				print('===========\ngradient:{}\n----------\n{}'.format(n,p.grad))
+
 		return reportedLoss, (after - before)
 
 	def rltrain(self, seqIn, seqOutOneHot, seqOutEmbedding, sentence):
