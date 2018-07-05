@@ -32,6 +32,7 @@ class RNNAttentionDecoder(nn.Module):
 		self.hidden_size = hidden_size
 		self.vocab_size = vocab_size
 
+		self.linear = nn.Linear(hidden_size, vocab_size)
 		self.gru = nn.GRU(hidden_size, hidden_size)
 		self.attn = nn.Linear(hidden_size + embedding_size, vocab_size)
 		self.attn_combine = nn.Linear(hidden_size + embedding_size, hidden_size)
@@ -42,16 +43,24 @@ class RNNAttentionDecoder(nn.Module):
 		wordEmbed = self.dropout(word.view(1,1,-1))
 		attn_weights_temp = torch.cat((wordEmbed[0],hidden[0]),1)
 		attn_weights = F.softmax(self.attn(attn_weights_temp), dim = 1)
-		print(attn_weights,"\n")
-		print("peepee 2 okay")
-		print(encoder_output[0], "\n")
+		#print(attn_weights,"\n")
+		#print("peepee 2 okay")
+		#print(encoder_output[0], "\n")
+		#print(encoder_output,"\n")
+		#print(attn_weights[0],"\n")
+		#print(attn_weights,"\n")
 		attn_weights = torch.t(attn_weights)
 		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),encoder_output[0].unsqueeze(0))
-		print("attn_toNetwork a okay")
+		#print("attn_toNetwork a okay")
+		#print(attn_toNetwork,"\n")
+		#print(wordEmbed,"\n")
+		attn_toNetwork = torch.t(attn_toNetwork)
+		#print(attn_toNetwork[0].size())
+		#print(wordEmbed[0].size())
 		probs = torch.cat((wordEmbed[0],attn_toNetwork[0]),1)
 		probs = self.attn_combine(probs).unsqueeze(0)
 		probs = F.relu(probs) # Activation function
-		probs, new_hidden = self.gru(probs, new_hidden)
-		probs = F.log_softmax(self.linear(hidden_size).view(1,-1))
+		probs, new_hidden = self.gru(probs, hidden)
+		probs = F.log_softmax(self.linear(probs[0]), dim = 1)
 		
 		return probs, new_hidden, attn_weights

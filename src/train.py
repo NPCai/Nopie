@@ -100,7 +100,7 @@ class EncoderDecoder():
 		''' Beam Search Implementation '''
 		with torch.no_grad():
 			
-			hidden = self.encoder(seqIn) # Forward propogation to hidden layer
+			encoder_output, hidden = self.encoder(seqIn) # Forward propogation to hidden layer
 			top3seqs = [(hidden, start, "", 1.0)] # (hidden, last_token_glove, full_string, prob)
 
 			while True:
@@ -116,7 +116,7 @@ class EncoderDecoder():
 					if string.endswith("END"):
 						newTop3seqs.append((hidden, glove, string, prob))
 						continue
-					softmax, hidden = self.decoder(glove, hidden)
+					softmax, hidden, _ = self.attndecoder(glove, hidden, encoder_output)
 					top3probs, top3vals = softmax.topk(3)
 					for probNew, valNew in zip(top3probs[0], top3vals[0]):
 						wordNew = utils.num2word(valNew.item())
