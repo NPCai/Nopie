@@ -19,7 +19,7 @@ class RNNDecoder(nn.Module):
 		self.linear = nn.Linear(hidden_size, vocab_size)
 	def forward(self, word, hidden, temperature=1.0): # Takes one input at a time
 		new_hidden = self.gru(word.view(1, 1, -1), hidden)[1]
-		probs = self.tempSoftmax(self.linear(new_hidden).view(1,-1), temperature) # NOTE: softmax expects 2-dim input or else everything breaks
+		probs = F.softmax(self.linear(new_hidden).view(1,-1)) # NOTE: softmax expects 2-dim input or else everything breaks
 		return probs, new_hidden
 	def tempSoftmax(self, vector, temperature): # softmax with temperature
 		exp = torch.exp(torch.div(vector.double(), temperature))

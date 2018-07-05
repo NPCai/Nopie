@@ -23,7 +23,7 @@ print("Training on dataset...","\n")
 
 STARTembed = torch.zeros(100).to(device)
 ENDembed = torch.ones(100).to(device)
-
+EMBED_DIM = 100
 UNK = utils.word2num("UNK")
 START = utils.word2num("START")
 END = utils.word2num("END")
@@ -53,22 +53,22 @@ for batch in range(batchRange):
 		batchSeqOutEmbedding.append(seqOutEmbedding)
 		batchSeqOutOneHot.append(seqOutOneHot)
 
-		seq_lengths = torch.LongTensor(list(map(len, seqIn))).to(device)
+	seq_lengths = torch.LongTensor(list(map(len, batchSeqIn))).to(device)
+	seq_tensor = torch.zeros((len(batchSeqIn), seq_lengths.max(), EMBED_DIM)).float().to(device)
 
-		seq_tensor = torch.zeros((len(seqIn), seq_lengths.max())).long().to(device)
-		for idx, (seq, seqlen) in enumerate(zip(batchSeqIn, seq_lengths)):
-			seq_tensor[idx, :seqlen] = torch.FloatTensor(seq)
+	for idx, (seq, seqlen) in enumerate(zip(batchSeqIn, seq_lengths)):
+		seq_tensor[idx, :seqlen] = seq[0]
+	
+	seq_lengths, perm_idx = seq_lengths.sort(0, descending=True)
+	seq_tensor = seq_tensor[perm_idx]
+	seq_tensor = seq_tensor.transpose(0,1) # (B,L,D) -> (L,B,D)
 
-		seq_lengths, perm_idx = seq_lengths.sort(0, descending=True)
-		seqIn = seqIn[perm_idx]
-		seqIn = seqIn.transpose(0,1) # (B,L,D) -> (L,B,D)
-		seqIn = pack_padded_sequence(seqIn, seq_lengths.cpu().numpy())
-
-		loss, time = ed.train(seqIn, torch.stack(seqOutOneHot), torch.stack(seqOutEmbedding))
-		if batch % 10 == 0:
-			print("\n","Squadie tuple: ", pair['sentence'],"")
-			print("Tuple prediciton:  ", ed.predict(seqIn))
-
+	packed = pack_padded_sequence(seq_tensor, seq_lengths.cpu().numpy())
+	loss, time = ed.train(packed, torch.stack(seqOutOneHot), torch.stack(seqOutEmbedding))
+	
+	if batch % 10 == 0:
+		print("\n","Squadie tuple: ", pair['sentence'],"")
+		print("Tuple prediciton:  ", ed.predict(seqIn))
 
 	print("Total loss at epoch %d: %.2f, and took time %d" % (batch, loss, time))
 
