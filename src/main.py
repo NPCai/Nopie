@@ -11,9 +11,9 @@ import random
 from timey import *
 
 if torch.cuda.is_available():
-	'''	torch.set_default_tensor_type(torch.cuda.FloatTensor)
+	torch.set_default_tensor_type(torch.cuda.FloatTensor)
 	device = torch.device("cuda")
-else:'''
+else:
 	torch.set_default_tensor_type(torch.FloatTensor)
 	device = torch.device("cpu")
 
@@ -41,18 +41,14 @@ for batch in range(batchRange):
 		seqIn = utils.string2gloves(pair['sentence'])
 		seqOutOneHot = [START]
 		seqOutEmbedding = [STARTembed]
-		for tup in pair['tuples']:
-			seqOutOneHot.extend(utils.sentence2nums(tup.replace("\t", ",")))
-			seqOutEmbedding.extend(utils.string2gloves(tup.replace("\t", ",")))
+		seqOutOneHot.extend(utils.sentence2nums(pair['sentence'].replace("\t", ",")))
+		seqOutEmbedding.extend(utils.string2gloves(pair['sentence'].replace("\t", ",")))
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 
-		if random.randint(0, 4) == 1:
-			loss, time = ed.rltrain(seqIn, seqOutOneHot, seqOutEmbedding, pair['sentence'])
-		else:
-			loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
+		loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
 		if batch % 10 == 0:
-			print("\n","Squadie tuple: ", tup,"")
+			print("\n","Squadie tuple: ", pair['sentence'],"")
 			print("Tuple prediciton:  ", ed.predict(seqIn))
 
 

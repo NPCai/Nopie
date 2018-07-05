@@ -13,13 +13,13 @@ import customLoss
 from torch.distributions import Categorical
 
 if torch.cuda.is_available():
-	'''	torch.set_default_tensor_type(torch.cuda.FloatTensor)
+	torch.set_default_tensor_type(torch.cuda.FloatTensor)
 	device = torch.device("cuda")
-else:'''
+else:
 	torch.set_default_tensor_type(torch.FloatTensor)
 	device = torch.device("cpu")
 
-teacher_forcing_ratio = 0.9
+teacher_forcing_ratio = 0.6
 seq_loss_penalty = 0.4 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
 start = torch.zeros(100).to(device)
 
@@ -28,11 +28,10 @@ class EncoderDecoder():
 		super().__init__()
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
-		self.attndecoder = RNNAttentionDecoder().to(device)
 		self.lossFn = nn.CrossEntropyLoss()
 		self.critic = customLoss.TupleCritic()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-5) 												   
-		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-5)
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-3) 												   
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-3)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding): 
 		''' Train one iteration, no batch '''
@@ -44,12 +43,12 @@ class EncoderDecoder():
 		if random.random() < teacher_forcing_ratio:
 			glovey = start
 			for i in range(len(seqOutOneHot) - 1):
-				softmax, hidden, _ = self.attndecoder(seqOutEmbedding[i], hidden, encoder_output)
+				softmax, hidden= self.decoder(seqOutEmbedding[i], hidden)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
 		else:
 			glove = start
 			for i in range(len(seqOutOneHot) - 1):
-				softmax, hidden, _ = self.attndecoder(glove, hidden, encoder_output)
+				softmax, hidden = self.decoder(glove, hidden)
 				word = utils.num2word(torch.argmax(softmax).item())
 				glove = utils.word2glove(word)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
@@ -100,7 +99,7 @@ class EncoderDecoder():
 		''' Beam Search Implementation '''
 		with torch.no_grad():
 			
-			hidden = self.encoder(seqIn) # Forward propogation to hidden layer
+			_, hidden = self.encoder(seqIn) # Forward propogation to hidden layer
 			top3seqs = [(hidden, start, "", 1.0)] # (hidden, last_token_glove, full_string, prob)
 
 			while True:
