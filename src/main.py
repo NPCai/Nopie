@@ -77,7 +77,7 @@ for batch in range(batchRange):
 
 	if batch % 10 == 0:
 		print("\n","Squadie tuple: ", pair['sentence'],"")
-		print("Tuple prediciton:  ", ed.predict(seqIn))
+		print("Tuple prediciton:  ", ed.predict(seqIn.view(1,1,-1)))
 
 	print("Total loss at epoch %d: %.2f, and took time %d" % (batch, loss, time))
 
