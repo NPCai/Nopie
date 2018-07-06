@@ -56,11 +56,7 @@ class EncoderDecoder():
 		loss = loss / ((seqOutOneHot.shape[1] - 1) ** seq_loss_penalty) # length normalization
 
 		loss.backward() # Compute grads with respect to the network
-
-		for p,n in zip(self.encoder.gru.parameters(), self.encoder.gru.all_weights[0]):
-			if n[:6] == 'weight':
-				print('===========\ngradient:{}\n----------\n{}'.format(n,p.grad))
-
+		break
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
 		self.encoder_optimizer.zero_grad() 
