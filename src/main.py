@@ -36,7 +36,7 @@ data = dataLoader.pairs(devSet=True)
 for batch in range(batchRange): 
 	loss = 0
 	minibatch = []
-	for i in np.random.randint(len(data), size=30):
+	for i in np.random.randint(len(data), size=5):
 		minibatch.append(data[i])
 	batchSeqIn = []
 	batchSeqOutOneHot = []
