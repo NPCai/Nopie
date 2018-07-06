@@ -49,7 +49,7 @@ class EncoderDecoder():
 			softmax = torch.t(softmax) * mask
 			print("softmax shape", softmax.shape)
 			print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
-			x = lossFn(softmax, seqOutOneHot[:, i+1].long())
+			x = lossFn(torch.t(softmax), seqOutOneHot[:, i+1].long())
 			loss += x
 			print("delta loss is ", x)
 		'''else:
