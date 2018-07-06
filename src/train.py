@@ -47,7 +47,7 @@ class EncoderDecoder():
 			mask = (i < seq_lengths).float()
 			softmax = torch.t(softmax) * mask
 			print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
-			lossOld = loss
+			lossOld = loss.item()
 			loss += lossFn(torch.t(softmax), seqOutOneHot[:, i+1].long())
 			print("delta loss is ", loss - lossOld, "with loss of ", loss)
 		'''else:
