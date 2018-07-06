@@ -30,8 +30,8 @@ class EncoderDecoder():
 		self.decoder = RNNDecoder().to(device)
 		self.lossFn = nn.CrossEntropyLoss()
 		self.critic = customLoss.TupleCritic()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-3)
-		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-3)
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-2)
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-2)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding, seq_lengths): 
 		''' Train one iteration, no batch '''
