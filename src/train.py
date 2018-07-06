@@ -28,25 +28,23 @@ class EncoderDecoder():
 		super().__init__()
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
-		self.lossFn = nn.CrossEntropyLoss()
 		self.critic = customLoss.TupleCritic()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-2)
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-2)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding, seq_lengths): 
 		''' Train one iteration, no batch '''
-		self.encoder_optimizer.zero_grad() 
-		self.decoder_optimizer.zero_grad()
+		lossFn = nn.CrossEntropyLoss()
 		loss = 0
 		encoder_output, hidden = self.encoder(seqIn) # Encode sentence
 
 		#if random.random() < teacher_forcing_ratio:
-		glove = start
+		glove = torch.zeros(100).to(device)
 		for i in range(seqOutOneHot.shape[1] - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
 			mask = (i < seq_lengths).float()
 			softmax = torch.t(softmax) * mask
-			loss += self.lossFn(torch.t(softmax), seqOutOneHot[:, i+1].long())
+			loss += lossFn(torch.t(softmax), seqOutOneHot[:, i+1].long())
 		'''else:
 			glove = start
 			for i in range(len(seqOutOneHot) - 1):
@@ -60,6 +58,8 @@ class EncoderDecoder():
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
+		self.encoder_optimizer.zero_grad() 
+		self.decoder_optimizer.zero_grad()
 		reportedLoss = loss.item()
 		after = time.time()
 		return reportedLoss, (after - before)
@@ -100,7 +100,7 @@ class EncoderDecoder():
 		with torch.no_grad():
 			
 			_, hidden = self.encoder(seqIn) # Forward propogation to hidden layer
-			top3seqs = [(hidden, start, "", 1.0)] # (hidden, last_token_glove, full_string, prob)
+			top3seqs = [(hidden, torch.zeros(100).to(device), "", 1.0)] # (hidden, last_token_glove, full_string, prob)
 
 			while True:
 				exit = True

@@ -36,7 +36,7 @@ data = dataLoader.pairs(devSet=True)
 for batch in range(batchRange): 
 	loss = 0
 	minibatch = []
-	for i in np.random.randint(len(data), size=10):
+	for i in np.random.randint(len(data), size=30):
 		minibatch.append(data[i])
 	batchSeqIn = []
 	batchSeqOutOneHot = []
@@ -78,7 +78,7 @@ for batch in range(batchRange):
 	if batch % 10 == 0:
 		print("\n","Squadie tuple: ", pair['sentence'],"")
 		print("Tuple prediciton:  ", ed.predict(seqIn.view(len(seqIn), 1, -1)))
-		ed.save(batch)
+		#ed.save(batch)
 
 	print("Total loss at epoch %d: %.2f, and took time %d" % (batch, loss, time))
 
