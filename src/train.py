@@ -49,7 +49,7 @@ class EncoderDecoder():
 			print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
 			lossOld = loss
 			loss += lossFn(torch.t(softmax), seqOutOneHot[:, i+1].long())
-			print("delta loss is ", loss.item() - lossOld.item(), "with loss of ", loss.item())
+			print("delta loss is ", loss - lossOld, "with loss of ", loss)
 		'''else:
 			glove = start
 			for i in range(len(seqOutOneHot) - 1):
