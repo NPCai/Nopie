@@ -57,7 +57,7 @@ for batch in range(batchRange):
 	out_lengths = seq_lengths + 2
 	seq_tensor = torch.zeros((len(batchSeqIn), seq_lengths.max(), EMBED_DIM)).float().to(device)
 	tgt_tensor = torch.zeros((len(batchSeqIn), out_lengths.max())).to(device)
-	embed_tensor = torch.zeros((len(batchSeqIn), out_lengths.max(), EMBED_DIM)).to(device)
+	embed_tensor = torch.ones((len(batchSeqIn), out_lengths.max(), EMBED_DIM)).to(device)
 
 	for idx, (seq, seqlen) in enumerate(zip(batchSeqIn, seq_lengths)):
 		seq_tensor[idx][:seqlen] = seq
