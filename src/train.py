@@ -56,7 +56,7 @@ class EncoderDecoder():
 		loss = loss / ((seqOutOneHot.shape[1] - 1) ** seq_loss_penalty) # length normalization
 
 		loss.backward() # Compute grads with respect to the network
-		break
+		return
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
 		self.encoder_optimizer.zero_grad() 
