@@ -46,9 +46,8 @@ class RNNAttentionDecoder(nn.Module):
 		attn_weights = torch.t(attn_weights)
 		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),encoder_output[0].unsqueeze(0))
 		attn_toNetwork = torch.t(attn_toNetwork)
-		probs = torch.cat((wordEmbed[0],attn_toNetwork[0]),1)
-		probs = self.attn_combine(probs).unsqueeze(0)
-		probs = F.relu(probs) # Activation function
+		probs_temp = torch.cat((wordEmbed[0],attn_toNetwork[0]),1)
+		probs = F.relu(self.attn_combine(probs_temp).unsqueeze(0))
 		probs, new_hidden = self.gru(probs, hidden)
 		probs = F.log_softmax(self.linear(probs[0]), dim = 1)
 		
