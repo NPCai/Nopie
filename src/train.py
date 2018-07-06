@@ -47,9 +47,9 @@ class EncoderDecoder():
 			mask = (i < seq_lengths).float()
 			softmax = torch.t(softmax) * mask
 			print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
-			lossOld = loss.item()
-			loss += lossFn(torch.t(softmax), seqOutOneHot[:, i+1].long())
-			print("delta loss is ", loss - lossOld, "with loss of ", loss)
+			x = lossFn(torch.t(softmax), seqOutOneHot[:, i+1].long())
+			loss += x
+			print("delta loss is ", x)
 		'''else:
 			glove = start
 			for i in range(len(seqOutOneHot) - 1):
