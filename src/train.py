@@ -46,6 +46,7 @@ class EncoderDecoder():
 			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
 			mask = (i < seq_lengths).float()
 			softmax = torch.t(softmax) * mask
+			print("softmax shape", torch.t(softmax))
 			print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
 			x = lossFn(torch.t(softmax), seqOutOneHot[:, i+1].long())
 			loss += x
