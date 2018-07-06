@@ -35,6 +35,8 @@ class EncoderDecoder():
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding, seq_lengths): 
 		''' Train one iteration, no batch '''
 		lossFn = nn.CrossEntropyLoss()
+		self.encoder_optimizer.zero_grad() 
+		self.decoder_optimizer.zero_grad()
 		loss = 0
 		encoder_output, hidden = self.encoder(seqIn) # Encode sentence
 
@@ -57,8 +59,7 @@ class EncoderDecoder():
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
-		self.encoder_optimizer.zero_grad() 
-		self.decoder_optimizer.zero_grad()
+		
 		reportedLoss = loss.item()
 		after = time.time()
 		return reportedLoss, (after - before)
