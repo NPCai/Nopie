@@ -55,7 +55,7 @@ class EncoderDecoder():
 				glove = utils.word2glove(word)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[:, i+1]]).to(device))'''
 		before = time.time()
-		loss = loss / ((len(seqOutOneHot) - 1) ** seq_loss_penalty) # length normalization
+		loss = loss / ((seqOutOneHot.shape[1] - 1) ** seq_loss_penalty) # length normalization
 
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
