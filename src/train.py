@@ -46,10 +46,11 @@ class EncoderDecoder():
 			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
 			mask = (i < seq_lengths).float()
 			print("mask is ", mask)
-			softmax = torch.t(softmax) * mask
+			# mask is 5 x 1
+			softmax = torch.t(mask.unsqueeze(0)) * softmax
 			print("softmax shape", softmax.shape)
 			print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
-			x = lossFn(torch.t(softmax), seqOutOneHot[:, i+1].long())
+			x = lossFn(softmax, seqOutOneHot[:, i+1].long())
 			loss += x
 			print("delta loss is ", x)
 		'''else:
