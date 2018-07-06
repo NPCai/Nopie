@@ -142,9 +142,9 @@ class EncoderDecoder():
 				num_words += 1
 			return sentence'''
 
-	def save(self): # Saving the trained network to a .ckpt file
-		torch.save(self.encoder.state_dict(), "RNNencoder.ckpt")
-		torch.save(self.decoder.state_dict(), "RNNdecoder.ckpt")
+	def save(self, epoch): # Saving the trained network to a .ckpt file
+		torch.save(self.encoder.state_dict(), "RNNencoder_epoch" + str(epoch) + ".ckpt")
+		torch.save(self.decoder.state_dict(), "RNNdecoder_epoch" + str(epoch) + ".ckpt")
 
 	def load(self): # Loading a trained network from a .ckpt file
 		torch.load("RNNencoder.ckpt", map_location=lambda storage, loc: storage)
