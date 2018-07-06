@@ -54,9 +54,9 @@ class EncoderDecoder():
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[:, i+1]]).to(device))'''
 		before = time.time()
 		loss = loss / ((seqOutOneHot.shape[1] - 1) ** seq_loss_penalty) # length normalization
-
 		loss.backward() # Compute grads with respect to the network
-		return
+		print("grad sum on jawn is ", self.encoder.gru.weight_hh_l0.grad.sum())
+		print("jawn 2 is ", self.encoder.gru.weight_ih_l0.grad.sum())
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
 		self.encoder_optimizer.zero_grad() 
