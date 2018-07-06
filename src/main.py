@@ -54,18 +54,25 @@ for batch in range(batchRange):
 		batchSeqOutOneHot.append(seqOutOneHot)
 
 	seq_lengths = torch.LongTensor(list(map(len, batchSeqIn))).to(device)
+	out_lengths = seq_lengths + 2
 	seq_tensor = torch.zeros((len(batchSeqIn), seq_lengths.max(), EMBED_DIM)).float().to(device)
+	tgt_tensor = torch.zeros((len(batchSeqIn), out_lengths.max())).to(device)
 
-	for idx, (seq, seqlen) in enumerate(zip(batchSeqIn, seq_lengths)):
-		seq_tensor[idx, :seqlen] = seq[0]
+	for idx, (seq, seqlen, one) in enumerate(zip(batchSeqIn, seq_lengths, batchSeqOutOneHot)):
+		seq_tensor[idx][:seqlen] = seq[idx]
+	
+	for idx, (seqlen, one) in enumerate(zip(out_lengths, batchSeqOutOneHot)):
+		tgt_tensor[idx][:seqlen] = torch.tensor(one).to(device)
 	
 	seq_lengths, perm_idx = seq_lengths.sort(0, descending=True)
-	seq_tensor = seq_tensor[perm_idx]
+	seq_tensor = seq_tensor[perm_idx] # Reorders by the seq length
+	tgt_tensor = tgt_tensor[perm_idx]
 	seq_tensor = seq_tensor.transpose(0,1) # (B,L,D) -> (L,B,D)
 
+
 	packed = pack_padded_sequence(seq_tensor, seq_lengths.cpu().numpy())
-	loss, time = ed.train(packed, torch.stack(seqOutOneHot), torch.stack(seqOutEmbedding))
-	
+	loss, time = ed.train(packed, seqOutOneHot, seqOutEmbedding)
+
 	if batch % 10 == 0:
 		print("\n","Squadie tuple: ", pair['sentence'],"")
 		print("Tuple prediciton:  ", ed.predict(seqIn))

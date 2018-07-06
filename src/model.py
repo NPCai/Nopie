@@ -10,7 +10,7 @@ class RNNEncoder(nn.Module):
 		self.gru = nn.GRU(embedding_size, hidden_size)
 	def forward(self, sentence): # Takes all input at once, sentence is a tensor
 		# (seq_len, batch len, input_size), [1] is the hidden state
-		return self.gru(sentence.view(len(sentence), 1, -1))
+		return self.gru(sentence)
 
 class RNNDecoder(nn.Module):
 	def __init__(self, embedding_size=100, hidden_size=512, vocab_size = utils.getVocabSize()):
