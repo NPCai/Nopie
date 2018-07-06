@@ -57,7 +57,7 @@ class EncoderDecoder():
 
 		loss.backward() # Compute grads with respect to the network
 
-		for p,n in zip(self.encoder.parameters(), self.encoder.all_weights[0]):
+		for p,n in zip(self.encoder.gru.parameters(), self.encoder.gru.all_weights[0]):
 			if n[:6] == 'weight':
 				print('===========\ngradient:{}\n----------\n{}'.format(n,p.grad))
 
