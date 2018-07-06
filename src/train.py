@@ -30,29 +30,30 @@ class EncoderDecoder():
 		self.decoder = RNNDecoder().to(device)
 		self.lossFn = nn.CrossEntropyLoss()
 		self.critic = customLoss.TupleCritic()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-3) 												   
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-3)
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-3)
 
-	def train(self, seqIn, seqOutOneHot, seqOutEmbedding): 
+	def train(self, seqIn, seqOutOneHot, seqOutEmbedding, seq_lengths): 
 		''' Train one iteration, no batch '''
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
 		loss = 0
 		encoder_output, hidden = self.encoder(seqIn) # Encode sentence
 
-		if random.random() < teacher_forcing_ratio:
-			glovey = start
-			for i in range(len(seqOutOneHot) - 1):
-				softmax, hidden= self.decoder(seqOutEmbedding[i], hidden)
-				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
-		else:
+		#if random.random() < teacher_forcing_ratio:
+		glove = start
+		for i in range(seqOutOneHot.shape[1] - 1):
+			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
+			mask = (i < seq_lengths).float()
+			softmax = torch.t(softmax) * mask
+			loss += self.lossFn(torch.t(softmax), seqOutOneHot[:, i+1].long())
+		'''else:
 			glove = start
 			for i in range(len(seqOutOneHot) - 1):
 				softmax, hidden = self.decoder(glove, hidden)
 				word = utils.num2word(torch.argmax(softmax).item())
 				glove = utils.word2glove(word)
-				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
-
+				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[:, i+1]]).to(device))'''
 		before = time.time()
 		loss = loss / ((len(seqOutOneHot) - 1) ** seq_loss_penalty) # length normalization
 
@@ -61,11 +62,6 @@ class EncoderDecoder():
 		self.decoder_optimizer.step()
 		reportedLoss = loss.item()
 		after = time.time()
-
-		for p,n in zip(encoder.parameters(),encoder._all_weights[0]):
-			if n[:6] == 'weight':
-				print('===========\ngradient:{}\n----------\n{}'.format(n,p.grad))
-
 		return reportedLoss, (after - before)
 
 	def rltrain(self, seqIn, seqOutOneHot, seqOutEmbedding, sentence):
@@ -119,7 +115,7 @@ class EncoderDecoder():
 					if string.endswith("END"):
 						newTop3seqs.append((hidden, glove, string, prob))
 						continue
-					softmax, hidden = self.decoder(glove, hidden)
+					softmax, hidden = self.decoder(glove, hidden, batch_size=1)
 					top3probs, top3vals = softmax.topk(3)
 					for probNew, valNew in zip(top3probs[0], top3vals[0]):
 						wordNew = utils.num2word(valNew.item())
