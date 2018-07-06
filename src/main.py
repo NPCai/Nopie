@@ -77,6 +77,8 @@ for batch in range(batchRange):
 
 	if batch % 10 == 0:
 		print("\n","Squadie tuple: ", pair['sentence'],"")
+		print("grad sum on jawn is ", ed.encoder.gru.weight_hh_l0.grad.sum())
+		print("jawn 2 is ", ed.encoder.gru.weight_ih_l0.grad.sum())
 		print("Tuple prediciton:  ", ed.predict(seqIn.view(len(seqIn), 1, -1)))
 		#ed.save(batch)
 

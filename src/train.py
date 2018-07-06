@@ -29,8 +29,8 @@ class EncoderDecoder():
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
 		self.critic = customLoss.TupleCritic()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-3)
-		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-3)
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=5e-3)
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=5e-3)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding, seq_lengths): 
 		''' Train one iteration, no batch '''
@@ -53,10 +53,8 @@ class EncoderDecoder():
 				glove = utils.word2glove(word)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[:, i+1]]).to(device))'''
 		before = time.time()
-		loss = loss / ((seqOutOneHot.shape[1] - 1) ** seq_loss_penalty) # length normalization
+		#loss = loss / ((seqOutOneHot.shape[1] - 1) ** seq_loss_penalty) # length normalization
 		loss.backward() # Compute grads with respect to the network
-		print("grad sum on jawn is ", self.encoder.gru.weight_hh_l0.grad.sum())
-		print("jawn 2 is ", self.encoder.gru.weight_ih_l0.grad.sum())
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
 		self.encoder_optimizer.zero_grad() 
