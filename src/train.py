@@ -30,7 +30,7 @@ class EncoderDecoder():
 		self.decoder = RNNDecoder().to(device)
 		weight = torch.ones(400003)
 		weight[utils.word2num("pad")] = 0.0
-		lossFn = nn.CrossEntropyLoss(weight=weight)
+		self.lossFn = nn.CrossEntropyLoss(weight=weight)
 		self.critic = customLoss.TupleCritic()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=5e-3)
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=5e-3)
