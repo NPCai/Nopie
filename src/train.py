@@ -38,7 +38,7 @@ class EncoderDecoder():
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
 		loss = 0
-
+		print(seqIn)
 		encoder_output, hidden = self.encoder(seqIn) # Encode sentence
 		# PROBLEM FOUND: zeroing out with a mask doesnt help ya dufus... the class label is still 0 i.e. "the"
 		# PROBLEM 2: mask multiplication not working properly
