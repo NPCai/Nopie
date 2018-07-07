@@ -58,7 +58,7 @@ class EncoderDecoder():
 					x = lossFn(softmax[j].unsqueeze(0), seqOutOneHot[j, i+1].long().unsqueeze(0))
 				else:
 					x = 0
-				loss += xg
+				loss += x
 			#print("delta loss is ", x)
 		'''else:
 			glove = start
