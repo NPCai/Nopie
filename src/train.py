@@ -39,7 +39,7 @@ class EncoderDecoder():
 		self.decoder_optimizer.zero_grad()
 		loss = 0
 		encoder_output, hidden = self.encoder(seqIn) # Encode sentence
-
+		# PROBLEM FOUND: zeroing out with a mask doesnt help ya dufus... the class label is still 0 i.e. "the"
 		#if random.random() < teacher_forcing_ratio:
 		glove = torch.zeros(100).to(device)
 		for i in range(seqOutOneHot.shape[1] - 1):
@@ -48,6 +48,7 @@ class EncoderDecoder():
 			print("mask is ", mask)
 			# mask is 5 x 1
 			softmax = torch.t(mask.unsqueeze(0)) * softmax
+			softmax[:, 0] = (0 == mask) # invert the bool mask
 			print("softmax shape", softmax.shape)
 			#print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
 			x = lossFn(softmax, seqOutOneHot[:, i+1].long())
