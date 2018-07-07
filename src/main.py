@@ -37,7 +37,8 @@ for batch in range(batchRange):
 	loss = 0
 	minibatch = []
 	for i in np.random.randint(len(data), size=5):
-		minibatch.append(data[i])
+		#minibatch.append(data[i])
+		minibatch.append({'sentence': "1 2 3 4 5"})
 	batchSeqIn = []
 	batchSeqOutOneHot = []
 	batchSeqOutEmbedding = []
@@ -45,8 +46,8 @@ for batch in range(batchRange):
 		seqIn = utils.string2gloves(pair['sentence'])
 		seqOutOneHot = [START]
 		seqOutEmbedding = [STARTembed]
-		seqOutOneHot.extend(utils.sentence2nums(pair['sentence'].replace("\t", ",")))
-		seqOutEmbedding.extend(utils.string2gloves(pair['sentence'].replace("\t", ",")))
+		seqOutOneHot.extend(utils.sentence2nums(pair['sentence'][::-1]))
+		seqOutEmbedding.extend(utils.string2gloves(pair['sentence'][::-1]))
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 		batchSeqIn.append(seqIn)
@@ -73,7 +74,7 @@ for batch in range(batchRange):
 	seq_tensor = seq_tensor.transpose(0,1) # (B,L,D) -> (L,B,D)
 	
 	packed = pack_padded_sequence(seq_tensor, seq_lengths.cpu().numpy())
-	loss, time = ed.train(packed, tgt_tensor, embed_tensor, seq_lengths)
+	loss, time = ed.train(packed, tgt_tensor, embed_tensor, out_lengths)
 
 	if batch % 10 == 0:
 		print("\n","Squadie tuple: ", pair['sentence'],"")

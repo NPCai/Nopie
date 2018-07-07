@@ -38,6 +38,7 @@ class EncoderDecoder():
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
 		loss = 0
+
 		encoder_output, hidden = self.encoder(seqIn) # Encode sentence
 		# PROBLEM FOUND: zeroing out with a mask doesnt help ya dufus... the class label is still 0 i.e. "the"
 		# PROBLEM 2: mask multiplication not working properly
@@ -46,6 +47,7 @@ class EncoderDecoder():
 		for i in range(seqOutOneHot.shape[1] - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
 			mask = (i < seq_lengths).float()
+			print(mask)
 			#print("mask is ", mask)
 			# mask is 5 x 1
 			#softmax = torch.t(mask.unsqueeze(0)) * softmax
