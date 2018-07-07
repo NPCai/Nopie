@@ -45,7 +45,7 @@ class EncoderDecoder():
 		glove = torch.zeros(100).to(device)
 		for i in range(seqOutOneHot.shape[1] - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
-			#mask = (i < (seq_lengths)).float()
+			mask = (i < (seq_lengths)).float()
 			#print(mask)
 			#print("mask is ", mask)
 			# mask is 5 x 1
