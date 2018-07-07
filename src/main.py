@@ -36,9 +36,10 @@ data = dataLoader.pairs(devSet=True)
 for batch in range(batchRange): 
 	loss = 0
 	minibatch = []
-	for i in np.random.randint(len(data), size=5):
+	#for i in np.random.randint(len(data), size=5):
+	for i in np.random.randint(13, size=5):
 		#minibatch.append(data[i])
-		minibatch.append({'sentence': "1 2 3 4 5"})
+		minibatch.append({'sentence': str([i for i in range(i)])})
 	batchSeqIn = []
 	batchSeqOutOneHot = []
 	batchSeqOutEmbedding = []
@@ -77,7 +78,7 @@ for batch in range(batchRange):
 	loss, time = ed.train(packed, tgt_tensor, embed_tensor, out_lengths)
 
 	if batch % 10 == 0:
-		print("\n","Squadie tuple: ", pair['sentence'],"")
+		print("\n","Squadie tuple: ", pair['sentence'][::-1],"")
 		print("grad sum on jawn is ", ed.encoder.gru.weight_hh_l0.grad.sum())
 		print("jawn 2 is ", ed.encoder.gru.weight_ih_l0.grad.sum())
 		print("Tuple prediciton:  ", ed.predict(seqIn.view(len(seqIn), 1, -1)))
