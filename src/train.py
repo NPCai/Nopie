@@ -55,7 +55,7 @@ class EncoderDecoder():
 			#print("softmax shape", softmax)
 			#print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
 			for j in range(len(mask)):
-				if mask[j].item() == 1:
+				if mask[j].item() == 1 and int(seqOutOneHot[j, i+1].item()) != utils.word2num("pad"):
 					print(utils.num2word(int(seqOutOneHot[j, i+1].item())))
 					x = lossFn(softmax[j].unsqueeze(0), seqOutOneHot[j, i+1].long().unsqueeze(0))
 				else:
