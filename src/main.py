@@ -35,25 +35,28 @@ data = dataLoader.pairs(devSet=True)
 for batch in range(batchRange): 
 	loss = 0
 	minibatch = []
-	for i in np.random.randint(len(data), size=1):
-		minibatch.append(data[i])
+	for i in np.random.randint(4, size=1):
+		x = [j for j in range(i,i+4+i)]
+		y = ""
+		for i in x:
+			y += str(i) + ' '
+		minibatch.append({'sentence': y.strip()})
 	for pair in minibatch: # TODO(jacob), batches, randomization
 		seqIn = utils.string2gloves(pair['sentence'])
 		seqOutOneHot = [START]
 		seqOutEmbedding = [STARTembed]
-		for tup in pair['tuples']:
+		'''for tup in pair['tuples']:
 			seqOutOneHot.extend(utils.sentence2nums(tup.replace("\t", ",")))
-			seqOutEmbedding.extend(utils.string2gloves(tup.replace("\t", ",")))
+			seqOutEmbedding.extend(utils.string2gloves(tup.replace("\t", ",")))'''
+		seqOutOneHot.extend(utils.sentence2nums(pair['sentence'][::-1]))
+		seqOutEmbedding.extend(utils.string2gloves(pair['sentence'][::-1]))
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 
-		if random.randint(0, 69) == 1:
-			loss, time = ed.rltrain(seqIn, seqOutOneHot, seqOutEmbedding, pair['sentence'])
-		else:
-			loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
-		if batch % 10 == 0:
-			print("\n","Squadie tuple: ", tup,"")
-			print("Tuple prediciton:  ", ed.predict(seqIn))
+	loss, time = ed.train(seqIn, seqOutOneHot, seqOutEmbedding)
+	if batch % 10 == 0:
+		print("\n","Squadie tuple: ", pair['sentence'][::-1],"")
+		print("Tuple prediciton:  ", ed.predict(seqIn))
 
 
 	print("Total loss at epoch %d: %.2f, and took time %d" % (batch, loss, time))
