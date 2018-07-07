@@ -58,7 +58,7 @@ class EncoderDecoder():
 					print(q)
 					o = seqOutOneHot[j, i+1].long()
 					print(o)
-					x = lossFn(q, o)
+					x = lossFn(q.unsqueeze(0), o)
 				else:
 					x = 0
 				loss += x
