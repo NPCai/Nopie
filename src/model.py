@@ -17,7 +17,7 @@ class RNNDecoder(nn.Module):
 		super().__init__()
 		self.gru = nn.GRU(embedding_size, hidden_size)
 		self.linear = nn.Linear(hidden_size, vocab_size)
-	def forward(self, word, hidden, temperature=1.0, batch_size=5): # Takes one input at a time
+	def forward(self, word, hidden, temperature=1.0, batch_size=10): # Takes one input at a time
 		new_hidden = self.gru(word.view(-1, batch_size, 100), hidden)[1]
 		probs = F.softmax(self.linear(new_hidden).view(batch_size, -1), dim=1) # NOTE: softmax expects 2-dim input or else everything breaks
 		return probs, new_hidden
