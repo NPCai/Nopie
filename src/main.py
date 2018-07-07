@@ -39,7 +39,7 @@ for batch in range(batchRange):
 	#for i in np.random.randint(len(data), size=5):
 	for i in np.random.randint(13, size=5):
 		#minibatch.append(data[i])
-		minibatch.append({'sentence': str([i for i in range(i)])})
+		minibatch.append({'sentence': str([j for j in range(i,i+5)])})
 	batchSeqIn = []
 	batchSeqOutOneHot = []
 	batchSeqOutEmbedding = []
