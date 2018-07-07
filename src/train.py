@@ -54,8 +54,6 @@ class EncoderDecoder():
 			#print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
 			for j in range(len(mask)):
 				if mask[j].item() == 1:
-					word = utils.num2word(torch.argmax(softmax[j]).item())
-					print(word)
 					x = lossFn(softmax[j].unsqueeze(0), seqOutOneHot[j, i+1].long().unsqueeze(0))
 				else:
 					x = 0
