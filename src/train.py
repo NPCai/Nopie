@@ -28,13 +28,16 @@ class EncoderDecoder():
 		super().__init__()
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
+		weight = torch.ones(400003)
+		weight[utils.word2num("pad")] = 0.0
+		lossFn = nn.CrossEntropyLoss(weight=weight)
 		self.critic = customLoss.TupleCritic()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=5e-3)
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=5e-3)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding, seq_lengths): 
 		''' Train one iteration, no batch '''
-		lossFn = nn.CrossEntropyLoss()
+		
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
 		loss = 0
@@ -45,7 +48,6 @@ class EncoderDecoder():
 		glove = torch.zeros(100).to(device)
 		for i in range(seqOutOneHot.shape[1] - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
-			mask = (i < (seq_lengths)).float()
 			#print(mask)
 			#print("mask is ", mask)
 			# mask is 5 x 1
@@ -53,12 +55,7 @@ class EncoderDecoder():
 			#softmax[:, 0] = (0 == mask).float() # invert the bool mask
 			#print("softmax shape", softmax)
 			#print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
-			for j in range(len(mask)): # batch len
-				if int(seqOutOneHot[j, i+1].item()) != utils.word2num("pad"):
-					x = lossFn(softmax[j].unsqueeze(0), seqOutOneHot[j, i+1].long().unsqueeze(0))
-				else:
-					x = 0
-				loss += x
+			loss += lossFn(softmax, seqOutOneHot[:, i+1].long())
 			#print("delta loss is ", x)
 		'''else:
 			glove = start
