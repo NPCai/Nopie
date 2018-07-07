@@ -66,7 +66,7 @@ class EncoderDecoder():
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[:, i+1]]).to(device))'''
 		before = time.time()
 		#loss = loss / ((seqOutOneHot.shape[1] - 1) ** seq_loss_penalty) # length normalization
-		loss = loss / seq_lengths.float().mean().item()
+		loss = loss #g/ seq_lengths.float().mean().item()
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
