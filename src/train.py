@@ -54,11 +54,7 @@ class EncoderDecoder():
 			#print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
 			for j in range(len(mask)):
 				if mask[j].item() == 1:
-					q = softmax[j]
-					print(q)
-					o = seqOutOneHot[j, i+1].long()
-					print(o)
-					x = lossFn(q.unsqueeze(0), o.unsqueeze(0))
+					x = lossFn(softmax[j].unsqueeze(0), seqOutOneHot[j, i+1].long().unsqueeze(0))
 				else:
 					x = 0
 				loss += x
