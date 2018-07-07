@@ -11,9 +11,9 @@ import random
 from timey import *
 
 if torch.cuda.is_available():
-	'''	torch.set_default_tensor_type(torch.cuda.FloatTensor)
+	torch.set_default_tensor_type(torch.cuda.FloatTensor)
 	device = torch.device("cuda")
-else:'''
+else:
 	torch.set_default_tensor_type(torch.FloatTensor)
 	device = torch.device("cpu")
 
