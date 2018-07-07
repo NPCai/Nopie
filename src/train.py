@@ -57,8 +57,8 @@ class EncoderDecoder():
 				if int(seqOutOneHot[j, i+1].item()) != utils.word2num("pad"):
 					x = lossFn(softmax[j].unsqueeze(0), seqOutOneHot[j, i+1].long().unsqueeze(0))
 				else:
-					x = 0g
-				loss += x
+					x = 0
+				loss += xg
 			#print("delta loss is ", x)
 		'''else:
 			glove = start
