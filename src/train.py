@@ -28,8 +28,8 @@ class EncoderDecoder():
 		super().__init__()
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
-		weight = torch.ones(400003)
-		weight[utils.word2num("pad")] = 0.0
+		#weight = torch.ones(400003)
+		#weight[utils.word2num("pad")] = 0.0
 		self.lossFn = nn.CrossEntropyLoss(weight=weight)
 		self.critic = customLoss.TupleCritic()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=5e-2)
