@@ -48,7 +48,7 @@ class EncoderDecoder():
 			print("mask is ", mask)
 			# mask is 5 x 1
 			softmax = torch.t(mask.unsqueeze(0)) * softmax
-			softmax[:, 0] = (0 == mask) # invert the bool mask
+			softmax[:, 0] = (0 == mask).float() # invert the bool mask
 			print("softmax shape", softmax.shape)
 			#print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
 			x = lossFn(softmax, seqOutOneHot[:, i+1].long())
