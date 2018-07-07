@@ -55,7 +55,7 @@ class EncoderDecoder():
 			#softmax[:, 0] = (0 == mask).float() # invert the bool mask
 			#print("softmax shape", softmax)
 			#print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
-			loss += lossFn(softmax, seqOutOneHot[:, i+1].long())
+			self.loss += lossFn(softmax, seqOutOneHot[:, i+1].long())
 			#print("delta loss is ", x)
 		'''else:
 			glove = start
