@@ -37,9 +37,13 @@ for batch in range(batchRange):
 	loss = 0
 	minibatch = []
 	#for i in np.random.randint(len(data), size=5):
-	for i in np.random.randint(13, size=5):
+	for i in np.random.randint(3, size=5):
 		#minibatch.append(data[i])
-		minibatch.append({'sentence': str([j for j in range(1,10)])})
+		x = [j for j in range(i,i+4+i)]
+		y = ""
+		for i in x:
+			y += str(i) + ' '
+		minibatch.append({'sentence': y.strip()})
 	batchSeqIn = []
 	batchSeqOutOneHot = []
 	batchSeqOutEmbedding = []
@@ -58,7 +62,7 @@ for batch in range(batchRange):
 	seq_lengths = torch.LongTensor(list(map(len, batchSeqIn))).to(device)
 	out_lengths = seq_lengths + 2
 	seq_tensor = torch.zeros((len(batchSeqIn), seq_lengths.max(), EMBED_DIM)).float().to(device)
-	tgt_tensor = torch.full((len(batchSeqIn), out_lengths.max()), utils.word2num("UNK")).to(device)
+	tgt_tensor = torch.full((len(batchSeqIn), out_lengths.max()), utils.word2num("pad")).to(device)
 	embed_tensor = torch.zeros((len(batchSeqIn), out_lengths.max(), EMBED_DIM)).to(device)
 
 	for idx, (seq, seqlen) in enumerate(zip(batchSeqIn, seq_lengths)):
