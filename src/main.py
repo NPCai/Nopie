@@ -37,7 +37,7 @@ for batch in range(batchRange):
 	loss = 0
 	minibatch = []
 	#for i in np.random.randint(len(data), size=5):
-	before = time.time()
+	before = time.time() * 1000
 	for i in np.random.randint(5, size=5):
 		#minibatch.append(data[i])
 		x = [j for j in range(i,i+4+i)]
@@ -81,7 +81,7 @@ for batch in range(batchRange):
 	
 	packed = pack_padded_sequence(seq_tensor, seq_lengths.cpu().numpy())
 	loss, time_prop = ed.train(packed, tgt_tensor, embed_tensor, out_lengths)
-	after = time.time()
+	after = time.time() * 1000
 	percent = (before - after) / time_prop
 	if batch % 10 == 0:
 		print("\n","Squadie tuple: ", pair['sentence'][::-1],"")
