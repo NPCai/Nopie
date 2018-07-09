@@ -90,7 +90,7 @@ for batch in range(batchRange):
 		print("Tuple prediciton:  ", ed.predict(seqIn.view(len(seqIn), 1, -1)))
 		#ed.save(batch)
 
-	print("Total loss at epoch %d: %.2f, and took time %d" % (batch, loss, percent))
+	print("Total loss at epoch %d: %.2f, and took time %f" % (batch, loss, time_prop)
 
 print("Saved", "\n")
 	
