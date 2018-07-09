@@ -49,13 +49,7 @@ class EncoderDecoder():
 		glove = torch.zeros(100).to(device)
 		for i in range(seqOutOneHot.shape[1] - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
-			#print(mask)
-			#print("mask is ", mask)
-			# mask is 5 x 1
-			#softmax = torch.t(mask.unsqueeze(0)) * softmax
-			#softmax[:, 0] = (0 == mask).float() # invert the bool mask
-			#print("softmax shape", softmax)
-			#print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
+
 			loss += self.lossFn(softmax, seqOutOneHot[:, i+1].long())
 			#print("delta loss is ", x)
 		'''else:
