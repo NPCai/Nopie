@@ -32,8 +32,8 @@ class EncoderDecoder():
 		weight[utils.word2num("pad")] = 0.0
 		self.lossFn = nn.CrossEntropyLoss(weight=weight)
 		self.critic = customLoss.TupleCritic()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=2e-2)
-		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=2e-2)
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-4)
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-4)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding, seq_lengths): 
 		''' Train one iteration, no batch '''
