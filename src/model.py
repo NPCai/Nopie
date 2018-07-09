@@ -15,10 +15,12 @@ class RNNEncoder(nn.Module):
 class RNNDecoder(nn.Module):
 	def __init__(self, embedding_size=100, hidden_size=512, vocab_size = utils.getVocabSize()):
 		super().__init__()
+		self.embed = nn.Embedding(400003, embedding_size)
 		self.gru = nn.GRU(embedding_size, hidden_size)
 		self.linear = nn.Linear(hidden_size, vocab_size)
 	def forward(self, word, hidden, temperature=1.0, batch_size=1): # Takes one input at a time
-		new_hidden = self.gru(word.view(-1, batch_size, 100), hidden)[1]
+		v = self.embed(word.view(-1, batch_size, 100))
+		new_hidden = self.gru(v, hidden)[1]
 		probs = F.softmax(self.linear(new_hidden).view(batch_size, -1), dim=1) # NOTE: softmax expects 2-dim input or else everything breaks
 		return probs, new_hidden
 	'''def tempSoftmax(self, vector, temperature): # softmax with temperature for differentiable decoding
