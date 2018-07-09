@@ -13,9 +13,9 @@ import customLoss
 from torch.distributions import Categorical
 
 if torch.cuda.is_available():
-	torch.set_default_tensor_type(torch.cuda.FloatTensor)
+	'''torch.set_default_tensor_type(torch.cuda.FloatTensor)
 	device = torch.device("cuda")
-else:
+else:'''
 	torch.set_default_tensor_type(torch.FloatTensor)
 	device = torch.device("cpu")
 
@@ -28,10 +28,10 @@ class EncoderDecoder():
 		super().__init__()
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
+		self.attndecoder = RNNAttentionDecoder().to(device)
 		weight = torch.ones(400003)
 		weight[utils.word2num("pad")] = 0.0
 		self.lossFn = nn.CrossEntropyLoss(weight=weight)
-		self.critic = customLoss.TupleCritic()
 		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-3)
 		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-3)
 
