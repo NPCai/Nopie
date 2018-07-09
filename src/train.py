@@ -45,6 +45,7 @@ class EncoderDecoder():
 		# PROBLEM FOUND: zeroing out with a mask doesnt help ya dufus... the class label is still 0 i.e. "the"
 		# PROBLEM 2: mask multiplication not working properly
 		#if random.random() < teacher_forcing_ratio:
+		before = time.time()
 		glove = torch.zeros(100).to(device)
 		for i in range(seqOutOneHot.shape[1] - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
@@ -64,7 +65,6 @@ class EncoderDecoder():
 				word = utils.num2word(torch.argmax(softmax).item())
 				glove = utils.word2glove(word)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[:, i+1]]).to(device))'''
-		before = time.time()
 		#loss = loss / ((seqOutOneHot.shape[1] - 1) ** seq_loss_penalty) # length normalization
 		loss = loss #g/ seq_lengths.float().mean().item()
 		loss.backward() # Compute grads with respect to the network
