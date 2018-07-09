@@ -3,13 +3,17 @@ import csv
 import torch
 import spacy
 import torchtext.vocab as vocab
+import os
 
-if torch.cuda.is_available():
-	'''torch.set_default_tensor_type(torch.cuda.FloatTensor)
+if torch.cuda.is_available() and os.name != "nt":
+	torch.set_default_tensor_type(torch.cuda.FloatTensor)
 	device = torch.device("cuda")
-else:'''
+else:
 	torch.set_default_tensor_type(torch.FloatTensor)
 	device = torch.device("cpu")
+
+def getDevice():
+	return device
 
 nlp = spacy.load('en')
 glove = vocab.GloVe(name='6B', dim=100)

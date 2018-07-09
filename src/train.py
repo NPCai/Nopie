@@ -12,12 +12,7 @@ import random
 import customLoss
 from torch.distributions import Categorical
 
-if torch.cuda.is_available():
-	'''torch.set_default_tensor_type(torch.cuda.FloatTensor)
-	device = torch.device("cuda")
-else:'''
-	torch.set_default_tensor_type(torch.FloatTensor)
-	device = torch.device("cpu")
+device = utils.getDevice()
 
 teacher_forcing_ratio = 0.6
 seq_loss_penalty = 0.4 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
