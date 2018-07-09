@@ -32,8 +32,8 @@ class EncoderDecoder():
 		weight[utils.word2num("pad")] = 0.0
 		self.lossFn = nn.CrossEntropyLoss(weight=weight)
 		self.critic = customLoss.TupleCritic()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=5e-2)
-		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=5e-2)
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=5e-3)
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=5e-3)
 
 	def train(self, seqIn, seqOutOneHot, seqOutEmbedding, seq_lengths): 
 		''' Train one iteration, no batch '''
@@ -66,7 +66,7 @@ class EncoderDecoder():
 				glove = utils.word2glove(word)
 				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[:, i+1]]).to(device))'''
 		#loss = loss / ((seqOutOneHot.shape[1] - 1) ** seq_loss_penalty) # length normalization
-		loss = loss #g/ seq_lengths.float().mean().item()
+		loss = loss / (seq_lengths.float().mean().item() ** seq_loss_penalty)
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()

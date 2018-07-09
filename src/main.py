@@ -38,7 +38,7 @@ for batch in range(batchRange):
 	minibatch = []
 	#for i in np.random.randint(len(data), size=5):
 	before = time.time()
-	for i in np.random.randint(5, size=5):
+	for i in np.random.randint(5, size=10):
 		#minibatch.append(data[i])
 		x = [j for j in range(i,i+4+i)]
 		y = ""
