@@ -10,21 +10,21 @@ class RNNEncoder(nn.Module):
 		self.gru = nn.GRU(embedding_size, hidden_size)
 	def forward(self, sentence): # Takes all input at once, sentence is a tensor
 		# (seq_len, batch len, input_size), [1] is the hidden state
-		return self.gru(sentence.view(len(sentence), 1, -1))
+		return self.gru(sentence)
 
 class RNNDecoder(nn.Module):
 	def __init__(self, embedding_size=100, hidden_size=512, vocab_size = utils.getVocabSize()):
 		super().__init__()
 		self.gru = nn.GRU(embedding_size, hidden_size)
 		self.linear = nn.Linear(hidden_size, vocab_size)
-	def forward(self, word, hidden, temperature=1.0): # Takes one input at a time
-		new_hidden = self.gru(word.view(1, 1, -1), hidden)[1]
-		probs = self.tempSoftmax(self.linear(new_hidden).view(1,-1), temperature) # NOTE: softmax expects 2-dim input or else everything breaks
+	def forward(self, word, hidden, temperature=1.0, batch_size=10): # Takes one input at a time
+		new_hidden = self.gru(word.view(-1, batch_size, 100), hidden)[1]
+		probs = F.softmax(self.linear(new_hidden).view(batch_size, -1), dim=1) # NOTE: softmax expects 2-dim input or else everything breaks
 		return probs, new_hidden
-	def tempSoftmax(self, vector, temperature): # softmax with temperature
+	'''def tempSoftmax(self, vector, temperature): # softmax with temperature for differentiable decoding
 		exp = torch.exp(torch.div(vector.double(), temperature))
 		denom = exp.sum()
-		return torch.div(exp, denom).float()
+		return torch.div(exp, denom).float()'''
 
 class RNNAttentionDecoder(nn.Module):
 	def __init__(self, embedding_size = 100, hidden_size = 512, vocab_size = utils.getVocabSize(), dropout_p = 0.1):

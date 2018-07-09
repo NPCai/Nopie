@@ -19,7 +19,7 @@ else:
 	torch.set_default_tensor_type(torch.FloatTensor)
 	device = torch.device("cpu")
 
-teacher_forcing_ratio = 0.9
+teacher_forcing_ratio = 0.6
 seq_loss_penalty = 0.4 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
 start = torch.zeros(100).to(device)
 
@@ -28,41 +28,51 @@ class EncoderDecoder():
 		super().__init__()
 		self.encoder = RNNEncoder().to(device)
 		self.decoder = RNNDecoder().to(device)
-		self.attndecoder = RNNAttentionDecoder().to(device)
-		self.lossFn = nn.CrossEntropyLoss()
+		weight = torch.ones(400003)
+		weight[utils.word2num("pad")] = 0.0
+		self.lossFn = nn.CrossEntropyLoss(weight=weight)
 		self.critic = customLoss.TupleCritic()
-		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-2) 												   
-		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-2)
+		self.encoder_optimizer = optim.Adam(self.encoder.parameters(), lr=1e-3)
+		self.decoder_optimizer = optim.Adam(self.decoder.parameters(), lr=1e-3)
 
-	def train(self, seqIn, seqOutOneHot, seqOutEmbedding): 
+	def train(self, seqIn, seqOutOneHot, seqOutEmbedding, seq_lengths): 
 		''' Train one iteration, no batch '''
+		
 		self.encoder_optimizer.zero_grad() 
 		self.decoder_optimizer.zero_grad()
 		loss = 0
 		encoder_output, hidden = self.encoder(seqIn) # Encode sentence
-
-		if random.random() < teacher_forcing_ratio:
-			glovey = start
-			for i in range(len(seqOutOneHot) - 1):
-				softmax, hidden, _ = self.attndecoder(seqOutEmbedding[i], hidden, encoder_output)
-				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
-		else:
+		# PROBLEM FOUND: zeroing out with a mask doesnt help ya dufus... the class label is still 0 i.e. "the"
+		# PROBLEM 2: mask multiplication not working properly
+		#if random.random() < teacher_forcing_ratio:
+		before = time.time()
+		glove = torch.zeros(100).to(device)
+		for i in range(seqOutOneHot.shape[1] - 1):
+			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
+			#print(mask)
+			#print("mask is ", mask)
+			# mask is 5 x 1
+			#softmax = torch.t(mask.unsqueeze(0)) * softmax
+			#softmax[:, 0] = (0 == mask).float() # invert the bool mask
+			#print("softmax shape", softmax)
+			#print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
+			loss += self.lossFn(softmax, seqOutOneHot[:, i+1].long())
+			#print("delta loss is ", x)
+		'''else:
 			glove = start
 			for i in range(len(seqOutOneHot) - 1):
-				softmax, hidden, _ = self.attndecoder(glove, hidden, encoder_output)
+				softmax, hidden = self.decoder(glove, hidden)
 				word = utils.num2word(torch.argmax(softmax).item())
 				glove = utils.word2glove(word)
-				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[i+1]]).to(device))
-
-		before = time.time()
-		loss = loss / ((len(seqOutOneHot) - 1) ** seq_loss_penalty) # length normalization
-
+				loss += self.lossFn(softmax, torch.tensor([seqOutOneHot[:, i+1]]).to(device))'''
+		#loss = loss / ((seqOutOneHot.shape[1] - 1) ** seq_loss_penalty) # length normalization
+		loss = loss / (seq_lengths.float().mean().item() ** seq_loss_penalty)
 		loss.backward() # Compute grads with respect to the network
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
+		
 		reportedLoss = loss.item()
 		after = time.time()
-		print("Model has been updated by backprop:  ")
 		return reportedLoss, (after - before)
 
 	def rltrain(self, seqIn, seqOutOneHot, seqOutEmbedding, sentence):
@@ -143,9 +153,9 @@ class EncoderDecoder():
 				num_words += 1
 			return sentence'''
 
-	def save(self): # Saving the trained network to a .ckpt file
-		torch.save(self.encoder.state_dict(), "RNNencoder.ckpt")
-		torch.save(self.decoder.state_dict(), "RNNdecoder.ckpt")
+	def save(self, epoch): # Saving the trained network to a .ckpt file
+		torch.save(self.encoder.state_dict(), "RNNencoder_epoch" + str(epoch) + ".ckpt")
+		torch.save(self.decoder.state_dict(), "RNNdecoder_epoch" + str(epoch) + ".ckpt")
 
 	def load(self): # Loading a trained network from a .ckpt file
 		torch.load("RNNencoder.ckpt", map_location=lambda storage, loc: storage)
