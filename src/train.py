@@ -49,13 +49,7 @@ class EncoderDecoder():
 		glove = torch.zeros(100).to(device)
 		for i in range(seqOutOneHot.shape[1] - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
-			#print(mask)
-			#print("mask is ", mask)
-			# mask is 5 x 1
-			#softmax = torch.t(mask.unsqueeze(0)) * softmax
-			#softmax[:, 0] = (0 == mask).float() # invert the bool mask
-			#print("softmax shape", softmax)
-			#print("seqOutOneHot is ", seqOutOneHot[:, i+1].long())
+
 			loss += self.lossFn(softmax, seqOutOneHot[:, i+1].long())
 			#print("delta loss is ", x)
 		'''else:
@@ -73,38 +67,7 @@ class EncoderDecoder():
 		
 		reportedLoss = loss.item()
 		after = time.time()
-		return reportedLoss, (after - before)
-
-	def rltrain(self, seqIn, seqOutOneHot, seqOutEmbedding, sentence):
-		''' Train one iteration, no batch '''
-		self.encoder_optimizer.zero_grad() 
-		self.decoder_optimizer.zero_grad()
-		loss = 0
-		hidden = self.encoder(seqIn) # Encode sentence
-		glove = start
-		tup = []
-		log_probs = []
-		for i in range(len(seqOutOneHot) - 1):
-			softmax, hidden = self.decoder(glove, hidden, 1.0) # lowish softmax temperature
-			m = Categorical(softmax)
-			wordPos = m.sample()
-			glove = utils.word2glove(utils.num2word(wordPos))
-			log_probs.append(m.log_prob(wordPos))
-			tup.append(utils.num2word(wordPos))
-
-		tup_str = ''.join(i.lower() + ' ' for i in tup)
-		total_reward = self.critic.forward(sentence, tup_str)
-		seq_prob = torch.stack(log_probs).sum()
-		print("SEQUENCE PROBABILITY:  ", seq_prob)
-		loss = (seq_prob / seq_prob ) * total_reward * (-10)
-		before = time.time()
-		loss.backward() # Compute grads with respect to the network
-		self.encoder_optimizer.step() # Update using the stored grad
-		self.decoder_optimizer.step()
-		reportedLoss = loss.item()
-		after = time.time()
-		print("Model has been updated by backprop:  ")
-		return loss.item(), (after - before)
+		return reportedLoss, (after - before)g
 
 	def predict(self, seqIn):
 		''' Beam Search Implementation '''
