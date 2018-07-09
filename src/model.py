@@ -39,9 +39,11 @@ class RNNAttentionDecoder(nn.Module):
 		self.dropout = nn.Dropout(dropout_p)
 		self.output = nn.Linear(hidden_size, vocab_size)
 
-	def forward(self, word, hidden, encoder_output):
-		wordEmbed = self.dropout(word.view(1,1,-1))
-		attn_weights_temp = torch.cat((wordEmbed[0],hidden[0]),1)
+	def forward(self, word, hidden, encoder_output, batch_size = 10):
+		wordEmbed = self.dropout(word.contiguous().view(1,1,-1))
+		print(wordEmbed[0].size(),"\n")
+		print(hidden[0].size(),"\n")
+		attn_weights_temp = torch.cat((wordEmbed[0],hidden[0].view(1,-1)),1)
 		attn_weights = F.softmax(self.attn(attn_weights_temp), dim = 1)
 		attn_weights = torch.t(attn_weights)
 		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),encoder_output[0].unsqueeze(0))

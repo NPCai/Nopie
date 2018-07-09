@@ -48,7 +48,7 @@ class EncoderDecoder():
 		before = time.time()
 		glove = torch.zeros(100).to(device)
 		for i in range(seqOutOneHot.shape[1] - 1):
-			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
+			softmax, hidden = self.attndecoder(seqOutEmbedding[:,i], hidden, encoder_output)
 
 			loss += self.lossFn(softmax, seqOutOneHot[:, i+1].long())
 			#print("delta loss is ", x)
