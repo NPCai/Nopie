@@ -27,14 +27,14 @@ class RNNDecoder(nn.Module):
 		return torch.div(exp, denom).float()'''
 
 class RNNAttentionDecoder(nn.Module):
-	def __init__(self, embedding_size = 100, hidden_size = 512, vocab_size = utils.getVocabSize(), dropout_p = 0.1):
+	def __init__(self, embedding_size = 100, hidden_size = 512, vocab_size = utils.getVocabSize(), dropout_p = 0.1, batch_size = 10):
 		super().__init__()
 		self.hidden_size = hidden_size
 		self.vocab_size = vocab_size
 
 		self.linear = nn.Linear(hidden_size, vocab_size)
 		self.gru = nn.GRU(hidden_size, hidden_size)
-		self.attn = nn.Linear(hidden_size + embedding_size, vocab_size)
+		self.attn = nn.Linear((hidden_size + embedding_size)*batch_size, vocab_size)
 		self.attn_combine = nn.Linear(hidden_size + embedding_size, hidden_size)
 		self.dropout = nn.Dropout(dropout_p)
 		self.output = nn.Linear(hidden_size, vocab_size)
@@ -46,11 +46,12 @@ class RNNAttentionDecoder(nn.Module):
 		attn_weights_temp = torch.cat((wordEmbed[0],hidden[0].view(1,-1)),1)
 		attn_weights = F.softmax(self.attn(attn_weights_temp), dim = 1)
 		attn_weights = torch.t(attn_weights)
-		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),encoder_output[0].unsqueeze(0))
+		print(attn_weights.size,"\n")
+		attn_toNetwork = torch.bmm(attn_weights.unsqueeze(0),encoder_output.unsqueeze(0))
 		attn_toNetwork = torch.t(attn_toNetwork)
 		probs_temp = torch.cat((wordEmbed[0],attn_toNetwork[0]),1)
 		probs = F.relu(self.attn_combine(probs_temp).unsqueeze(0))
 		probs, new_hidden = self.gru(probs, hidden)
-		probs = F.log_softmax(self.linear(probs[0]), dim = 1)
+		probs = F.log_softmax(self.linear(new_hidden).view(batch_size, -1), dim = 1)
 		
 		return probs, new_hidden, attn_weights
