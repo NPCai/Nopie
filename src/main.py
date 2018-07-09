@@ -37,7 +37,7 @@ for batch in range(batchRange):
 	loss = 0
 	minibatch = []
 	#for i in np.random.randint(len(data), size=5):
-	before = time.time() * 1000
+	before = time.time()
 	for i in np.random.randint(5, size=5):
 		#minibatch.append(data[i])
 		x = [j for j in range(i,i+4+i)]
@@ -81,8 +81,8 @@ for batch in range(batchRange):
 	
 	packed = pack_padded_sequence(seq_tensor, seq_lengths.cpu().numpy())
 	loss, time_prop = ed.train(packed, tgt_tensor, embed_tensor, out_lengths)
-	after = time.time() * 1000
-	percent = (before - after) / time_prop
+	after = time.time()
+	percent = (after - before)
 	if batch % 10 == 0:
 		print("\n","Squadie tuple: ", pair['sentence'][::-1],"")
 		print("grad sum on jawn is ", ed.encoder.gru.weight_hh_l0.grad.sum())
@@ -90,7 +90,7 @@ for batch in range(batchRange):
 		print("Tuple prediciton:  ", ed.predict(seqIn.view(len(seqIn), 1, -1)))
 		#ed.save(batch)
 
-	print("Total loss at epoch %d: %.2f, and took time %f" % (batch, loss, time_prop))
+	print("Total loss at epoch %d: %.2f, and took time %f of total %f" % (batch, loss, percent, time_prop))
 
 print("Saved", "\n")
 	

@@ -45,7 +45,7 @@ class EncoderDecoder():
 		# PROBLEM FOUND: zeroing out with a mask doesnt help ya dufus... the class label is still 0 i.e. "the"
 		# PROBLEM 2: mask multiplication not working properly
 		#if random.random() < teacher_forcing_ratio:
-		before = time.time() * 1000
+		before = time.time()
 		glove = torch.zeros(100).to(device)
 		for i in range(seqOutOneHot.shape[1] - 1):
 			softmax, hidden = self.decoder(seqOutEmbedding[:,i], hidden)
@@ -102,7 +102,7 @@ class EncoderDecoder():
 		self.encoder_optimizer.step() # Update using the stored grad
 		self.decoder_optimizer.step()
 		reportedLoss = loss.item()
-		after = time.time() * 1000
+		after = time.time()
 		print("Model has been updated by backprop:  ")
 		return loss.item(), (after - before)
 
