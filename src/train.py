@@ -12,12 +12,7 @@ import random
 import customLoss
 from torch.distributions import Categorical
 
-if torch.cuda.is_available():
-	'''torch.set_default_tensor_type(torch.cuda.FloatTensor)
-	device = torch.device("cuda")
-else:'''
-	torch.set_default_tensor_type(torch.FloatTensor)
-	device = torch.device("cpu")
+device = utils.getDevice()
 
 teacher_forcing_ratio = 0.6
 seq_loss_penalty = 0.4 # Higher means longer sequences discouraged (i.e. higher -> shorter sequences)
@@ -42,8 +37,6 @@ class EncoderDecoder():
 		self.decoder_optimizer.zero_grad()
 		loss = 0
 		encoder_output, hidden = self.encoder(seqIn) # Encode sentence
-		# PROBLEM FOUND: zeroing out with a mask doesnt help ya dufus... the class label is still 0 i.e. "the"
-		# PROBLEM 2: mask multiplication not working properly
 		#if random.random() < teacher_forcing_ratio:
 		before = time.time()
 		glove = torch.zeros(100).to(device)
@@ -100,21 +93,6 @@ class EncoderDecoder():
 				top3seqs = newTop3seqs[0:3] # keep the top 3 of 9
 
 			return top3seqs[0][2] # just return the string
-
-	'''def predict(self, seqIn):
-		with torch.no_grad():
-			hidden = self.encoder(seqIn) # Forward propogation to hidden layer
-			sentence = []
-			glove = torch.zeros(100).to(device) # start token, all zeros
-			word = "START"
-			max_len, num_words = 40, 0 # failsafe
-			while word != "END" and num_words < max_len:
-				softmax, hidden = self.decoder(glove, hidden)
-				word = utils.num2word(torch.argmax(softmax).item())
-				sentence.append(word)
-				glove = utils.word2glove(word)
-				num_words += 1
-			return sentence'''
 
 	def save(self, epoch): # Saving the trained network to a .ckpt file
 		torch.save(self.encoder.state_dict(), "RNNencoder_epoch" + str(epoch) + ".ckpt")

@@ -11,12 +11,7 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 import random
 from timey import *
 
-if torch.cuda.is_available():
-	'''torch.set_default_tensor_type(torch.cuda.FloatTensor)
-	device = torch.device("cuda")
-else:'''
-	torch.set_default_tensor_type(torch.FloatTensor)
-	device = torch.device("cpu")
+device = utils.getDevice()
 
 ed = EncoderDecoder()
 print("Training on dataset...","\n")
