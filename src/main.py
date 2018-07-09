@@ -44,7 +44,7 @@ for batch in range(batchRange):
 		y = ""
 		for i in x:
 			y += str(i) + ' '
-		minibatch.append({'sentence': y.strip()})
+		minibatch.append({'sentence': "The cat is under the hat"})
 	batchSeqIn = []
 	batchSeqOutOneHot = []
 	batchSeqOutEmbedding = []
@@ -52,8 +52,8 @@ for batch in range(batchRange):
 		seqIn = utils.string2gloves(pair['sentence'])
 		seqOutOneHot = [START]
 		seqOutEmbedding = [STARTembed]
-		seqOutOneHot.extend(utils.sentence2nums(pair['sentence'][::-1]))
-		seqOutEmbedding.extend(utils.string2gloves(pair['sentence'][::-1]))
+		seqOutOneHot.extend(utils.sentence2nums(pair['sentence']))
+		seqOutEmbedding.extend(utils.string2gloves(pair['sentence']))
 		seqOutOneHot.append(END)
 		seqOutEmbedding.append(ENDembed)
 		batchSeqIn.append(seqIn)
@@ -84,7 +84,7 @@ for batch in range(batchRange):
 	after = time.time()
 	percent = (after - before)
 	if batch % 10 == 0:
-		print("\n","Squadie tuple: ", pair['sentence'][::-1],"")
+		print("\n","Squadie tuple: ", pair['sentence'],"")
 		print("grad sum on jawn is ", ed.encoder.gru.weight_hh_l0.grad.sum())
 		print("jawn 2 is ", ed.encoder.gru.weight_ih_l0.grad.sum())
 		print("Tuple prediciton:  ", ed.predict(seqIn.view(len(seqIn), 1, -1)))
