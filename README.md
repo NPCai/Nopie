@@ -1,6 +1,6 @@
 # Nopie
 
-Neural OPen infomation extractor, based on our [Squadie](https://github.com/NPCai/Squadie) dataset.
+Neural OPen infomation extractor, based on our [Squadie](https://github.com/NPCai/Squadie) dataset and bootstrapped from the [Graphene OpenIE system](https://github.com/Lambda-3/Graphene).
 
 ## Overview
 
